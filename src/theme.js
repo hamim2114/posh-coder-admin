@@ -1,0 +1,13 @@
+import { createTheme } from "@mui/material";
+
+export const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#00A590",
+            // main: '#6778EF',
+            // light: '#c2c9f9'
+        },
+        lightGray: '#F5F7FF'
+    },
+    shadow: ["none", "0px 2px 4px rgba(0, 0, 0, 0.2)"]
+})
