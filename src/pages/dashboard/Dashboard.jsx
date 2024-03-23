@@ -26,7 +26,7 @@ const Dashboard = () => {
   return (
     <Box sx={{
       p: 5,
-      maxWidth: '1300px'
+      // maxWidth: '1300px'
     }}>
       <Stack direction='row' flexWrap='wrap' gap={4}>
         <Stack direction='row' alignItems='center' justifyContent='space-between' sx={cardStyle.main}>

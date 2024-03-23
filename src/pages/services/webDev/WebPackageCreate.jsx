@@ -1,25 +1,53 @@
 import { Clear } from '@mui/icons-material';
 import { Box, Button, Stack, TextField, Typography } from '@mui/material'
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react'
+import { axiosReq } from '../../../utils/axiosReq';
+import toast from 'react-hot-toast';
+import LoadingButton from '@mui/lab/LoadingButton';
+import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 
-const WebPackageCreate = () => {
+const WebPackageCreate = ({ handleDialogClose }) => {
+    const [packageName, SetPackageName] = useState('')
+    const [packagePrice, SetPackagePrice] = useState('')
     const [inputValue, setInputValue] = useState('');
-    const [words, setWords] = useState([]);
+    const [detailsList, setDetailsList] = useState([]);
+
+
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+        mutationFn: (input) => axiosReq.post('/webpackage/create', input),
+        onSuccess: (res) => {
+            queryClient.invalidateQueries(['webpackage']);
+            toast.success('Web Package Created!')
+            SetPackageName('')
+            SetPackagePrice('')
+            setDetailsList([])
+            handleDialogClose()
+        },
+        onError: (err) => toast.error('Something Went Wrong!')
+    })
+
+    const handleSubmit = () => {
+        mutation.mutate({
+            name: packageName,
+            price: packagePrice,
+            details: detailsList
+        })
+    }
 
     const handleInputChange = (e) => {
         setInputValue(e.target.value);
     };
-
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && inputValue.trim() !== '') {
-            setWords([...words, inputValue.trim()]);
+            setDetailsList([...detailsList, inputValue.trim()]);
             setInputValue('');
         }
     };
-
     const handleDelete = (index) => {
-        const updatedWords = words.filter((_, i) => i !== index);
-        setWords(updatedWords);
+        const updatedWords = detailsList.filter((_, i) => i !== index);
+        setDetailsList(updatedWords);
     };
     return (
         <Box>
@@ -34,12 +62,12 @@ const WebPackageCreate = () => {
                 // borderRadius: '5px',
                 // bgcolor: '#fff'
             }}>
-                <TextField id="standard-basic" label="Package Name" placeholder='e.g. E-commerce Website' variant="outlined" size='small' />
-                <TextField id="standard-basic" label="Price" variant="outlined" placeholder='e.g. Start at Tk 20,000' size='small' />
+                <TextField onChange={(e) => SetPackageName(e.target.value)} id="standard-basic" label="Package Name" placeholder='e.g. E-commerce Website' variant="outlined" size='small' />
+                <TextField onChange={(e) => SetPackagePrice(e.target.value)} id="standard-basic" label="Price" variant="outlined" placeholder='e.g. Start at Tk 20,000' size='small' />
                 <Box mt={3} mb={2}>
                     <Typography mb={1}>Package Details</Typography>
                     <Stack gap={1}>
-                        {words.map((word, index) => (
+                        {detailsList.map((word, index) => (
                             <Stack direction='row' alignItems='center' gap={1} sx={{
                                 border: '1px solid lightgray',
                                 borderRadius: '5px',
@@ -57,21 +85,10 @@ const WebPackageCreate = () => {
                             </Stack>
                         ))}
                         <TextField size='small' id="standard-basic" label="Type a word and press Enter" onChange={handleInputChange} value={inputValue} onKeyPress={handleKeyPress} variant="standard" />
-                        {/* <input style={{
-                        outline: 'none',
-                        border: 'none',
-                        marginTop: words.length ? '10px' : 0
-                    }}
-                    type='text'
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    onKeyPress={handleKeyPress}
-                    placeholder='Type a word and press Enter'
-                /> */}
                     </Stack>
                 </Box>
             </Box>
-            <Button variant='contained'>Submit</Button>
+            <CLoadingBtn handleClick={handleSubmit} loading={mutation.isPending}>Submit</CLoadingBtn>
         </Box >
     )
 }

@@ -1,31 +1,56 @@
 import { Clear } from '@mui/icons-material';
 import { Box, Button, Stack, TextField, Typography } from '@mui/material'
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react'
+import { axiosReq } from '../../../utils/axiosReq';
+import toast from 'react-hot-toast';
+import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 
-const WebPackageEdit = ({ data }) => {
+const WebPackageEdit = ({ data, handleDialogClose }) => {
     const [inputValue, setInputValue] = useState('');
-    const [words, setWords] = useState([]);
+    const [packageDetails, setPackageDetails] = useState([]);
     const [packageName, setPackageName] = useState('')
     const [packagePrice, setPackagePrice] = useState('')
-    console.log(data)
+
+
+    const queryClient = useQueryClient();
+    const mutation = useMutation({
+        mutationFn: (input) => axiosReq.put(`/webpackage/update/${data._id}`,input),
+        onSuccess: (res) => {
+            queryClient.invalidateQueries(['webpackage']);
+            toast.success('Update Success!')
+            handleDialogClose()
+        },
+        onError: (err) => toast.error('Something Went Wrong!')
+    })
+
+    const handleUpdate = () => {
+        mutation.mutate({
+            name: packageName,
+            price: packagePrice,
+            details: packageDetails
+        })
+    }
+
     const handleInputChange = (e) => {
         setInputValue(e.target.value);
     };
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && inputValue.trim() !== '') {
-            setWords([...words, inputValue.trim()]);
+            setPackageDetails([...packageDetails, inputValue.trim()]);
             setInputValue('');
         }
     };
     const handleDelete = (index) => {
-        const updatedWords = words.filter((_, i) => i !== index);
-        setWords(updatedWords);
+        const updatedWords = packageDetails.filter((_, i) => i !== index);
+        setPackageDetails(updatedWords);
     };
     useEffect(() => {
-        setWords(data.info);
+        setPackageDetails(data.details);
         setPackageName(data.name);
         setPackagePrice(data.price)
     }, [data])
+
     return (
         <Box>
             <Typography variant='h5' color='gray' mb={3}>Edit Web Package</Typography>
@@ -44,7 +69,7 @@ const WebPackageEdit = ({ data }) => {
                 <Box mt={3} mb={2}>
                     <Typography mb={1}>Package Details</Typography>
                     <Stack gap={1}>
-                        {words.map((word, index) => (
+                        {packageDetails.map((word, index) => (
                             <Stack direction='row' alignItems='center' gap={1} sx={{
                                 border: '1px solid lightgray',
                                 borderRadius: '5px',
@@ -62,21 +87,12 @@ const WebPackageEdit = ({ data }) => {
                             </Stack>
                         ))}
                         <TextField size='small' id="standard-basic" label="Type a word and press Enter" onChange={handleInputChange} value={inputValue} onKeyPress={handleKeyPress} variant="standard" />
-                        {/* <input style={{
-                        outline: 'none',
-                        border: 'none',
-                        marginTop: words.length ? '10px' : 0
-                    }}
-                    type='text'
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    onKeyPress={handleKeyPress}
-                    placeholder='Type a word and press Enter'
-                /> */}
                     </Stack>
                 </Box>
             </Box>
-            <Button variant='contained'>Update</Button>
+            <CLoadingBtn loading={mutation.isPending} handleClick={handleUpdate}>
+                Update
+            </CLoadingBtn>
         </Box >
     )
 }

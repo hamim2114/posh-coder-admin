@@ -17,6 +17,9 @@ import ListItemText from '@mui/material/ListItemText';
 import { Avatar, Collapse, Drawer, Menu, MenuItem, useMediaQuery } from '@mui/material';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AutoAwesomeMotion, ExpandLess, ExpandMore, Logout, PeopleAlt, Person, ShoppingCart, SpaceDashboard, StickyNote2, Workspaces } from '@mui/icons-material';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { axiosReq } from '../../utils/axiosReq';
+import toast from 'react-hot-toast';
 
 const drawerWidth = 240;
 
@@ -65,11 +68,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-
-const userSettings = [
-  { name: 'Profile', icon: <Person /> },
-  { name: 'Logout', icon: <Logout /> }
-];
 const drawerList = [
   { name: 'Dashboard', icon: <SpaceDashboard />, path: '/admin/dashboard' },
   { name: 'Users', icon: <PeopleAlt />, path: '/admin/users' },
@@ -95,6 +93,22 @@ export default function Layout() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [serviceListOpen, setServiceListOpen] = React.useState(false)
 
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: () => axiosReq.post('/admin/logout'),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries(['logout']);
+      localStorage.removeItem('poshcoder')
+      window.location.href = 'admin/login'
+      toast.success(res.data)
+    },
+    onError: (err) => toast.error(err.response.data)
+  })
+
+  const handleLogout = () => {
+    mutation.mutate()
+  }
+
   const matches = useMediaQuery("(max-width:600px)");
   const { pathname } = useLocation()
 
@@ -119,7 +133,7 @@ export default function Layout() {
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              onClick={() => setDrawerOpen(p=> !p)}
+              onClick={() => setDrawerOpen(p => !p)}
               edge="start"
               sx={{
                 marginRight: 5,
@@ -150,12 +164,17 @@ export default function Layout() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {userSettings.map((item, id) => (
-                <MenuItem sx={{ pr: 6, my: 1 }} key={id} onClick={handleCloseUserMenu}>
-                  {item.icon}
-                  <Typography textAlign="center" marginLeft={2}>{item.name}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem sx={{ pr: 6, my: 1 }} onClick={handleCloseUserMenu}>
+                <Person />
+                <Typography textAlign="center" marginLeft={2}>Profile</Typography>
+              </MenuItem>
+              <MenuItem sx={{ pr: 6, my: 1 }} onClick={() => {
+                handleCloseUserMenu();
+                handleLogout()
+              }}>
+                <Logout />
+                <Typography textAlign="center" marginLeft={2}>LogOut</Typography>
+              </MenuItem>
             </Menu>
           </Box>
 
@@ -178,7 +197,7 @@ export default function Layout() {
           {/* <IconButton onClick={handleDrawerClose}>
             <ChevronLeftIcon />
           </IconButton> */}
-           <Typography variant='h5' fontWeight='bold' color='gray'>Posh Coder</Typography>
+          <Typography variant='h5' fontWeight='bold' color='gray'>Posh Coder</Typography>
         </DrawerHeader>
         {/* <Divider /> */}
         <List>
@@ -189,7 +208,7 @@ export default function Layout() {
                   <>
                     <Link className='link' to={item.path}>
                       <ListItemButton sx={{
-                        px: 1,mx:2, borderRadius: '5px',mb:.5,
+                        px: 1, mx: 2, borderRadius: '5px', mb: .5,
                         color: 'gray',
                         bgcolor: item.path === pathname ? theme.palette.primary.main : '',
                         ":hover": { bgcolor: theme.palette.primary.main, color: '#fff' }
@@ -198,8 +217,8 @@ export default function Layout() {
                           {item.icon}
                         </ListItemIcon>
                         <ListItemText primary={item.name} sx={{
-                           opacity: drawerOpen ? 1 : 0 , 
-                           }} />
+                          opacity: drawerOpen ? 1 : 0,
+                        }} />
                         {serviceListOpen ? <ExpandLess /> : <ExpandMore />}
                       </ListItemButton>
                     </Link>
@@ -209,7 +228,7 @@ export default function Layout() {
                           item?.more?.map((i, id) => (
                             <Link className='link' key={id} to={i.path}>
                               <ListItemButton sx={{
-                                ml: 5,mr:2,mb:.5, borderRadius: '5px',
+                                ml: 5, mr: 2, mb: .5, borderRadius: '5px',
                                 bgcolor: i.path === pathname ? theme.palette.primary.main : '',
                                 color: i.path === pathname ? '#fff' : '',
                                 ":hover": { bgcolor: theme.palette.primary.main, color: '#fff' }
@@ -230,7 +249,7 @@ export default function Layout() {
                 ) : (
                   <Link className='link' to={item.path}>
                     <ListItemButton disableGutters sx={{
-                      px: 1,mb:.5,mx:2,
+                      px: 1, mb: .5, mx: 2,
                       borderRadius: '5px',
                       bgcolor: item.path === pathname ? theme.palette.primary.main : '',
                       color: item.path === pathname ? '#fff' : 'gray',
@@ -238,8 +257,9 @@ export default function Layout() {
                         bgcolor: theme.palette.primary.main, color: '#fff',
                       }
                     }}>
-                      <ListItemIcon sx={{ 
-                        minWidth: 0, mr: 1.5,color: 'inherit'}}>
+                      <ListItemIcon sx={{
+                        minWidth: 0, mr: 1.5, color: 'inherit'
+                      }}>
                         {item.icon}
                       </ListItemIcon>
                       <ListItemText primary={item.name} sx={{ opacity: drawerOpen ? 1 : 0 }} />
@@ -252,7 +272,7 @@ export default function Layout() {
       </Drawer>
       <Main open={drawerOpen}>
         <DrawerHeader />
-        <Box sx={{ p: 1}}>
+        <Box sx={{ p: 1 }}>
           <Outlet />
         </Box>
       </Main>

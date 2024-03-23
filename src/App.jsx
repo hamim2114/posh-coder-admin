@@ -9,10 +9,10 @@ import WebDev from './pages/services/webDev/WebDev'
 import { useEffect, useState } from 'react'
 
 function App() {
-  const [token, setToken] = useState(sessionStorage.getItem('poshcoder_admin'))
+  const [token, setToken] = useState(localStorage.getItem('poshcoder'))
   
   useEffect(() => {
-    setToken(sessionStorage.getItem('poshcoder_admin'))
+    setToken(localStorage.getItem('poshcoder'))
   },[])
 
   return (

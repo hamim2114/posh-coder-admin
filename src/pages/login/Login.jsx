@@ -1,31 +1,34 @@
-import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
+import React, { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Stack } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { axiosReq } from '../../utils/axiosReq';
+import toast from 'react-hot-toast';
 
 export default function Login() {
-  const [token, setToken] = useState({})
-  const navigate = useNavigate()
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (input) => axiosReq.post('/admin/login', input),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries(['login']);
+      localStorage.setItem('poshcoder', res.data._id)
+      toast.success('Login Success!')
+      window.location.href = "/admin/dashboard";
+    },
+    onError: (err) => toast.error(err.response.data)
+  })
+
   const handleSubmit = (event) => {
-    // event.preventDefault();
+    event.preventDefault();
     const data = new FormData(event.currentTarget);
-    setToken({
+    mutation.mutate({
       email: data.get('email'),
       password: data.get('password'),
-    });
-    sessionStorage.setItem('poshcoder_admin', JSON.stringify({
-      email: data.get('email'),
-      password: data.get('password'),
-    }))
+    })
   };
-  useEffect(() => {
-    if (token) {
-      navigate('/admin/dashboard')
-    }
-  }, [token])
 
   return (
     <Stack sx={{
@@ -46,37 +49,32 @@ export default function Login() {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
-            size='small'
             margin="normal"
             required
             fullWidth
             id="email"
-            value='demo@mail.com'
             label="Email Address"
             name="email"
             autoComplete="email"
           />
           <TextField
-            size='small'
-            // margin="normal"
+            margin="normal"
             required
             fullWidth
-            value='12345'
             name="password"
             label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
           />
-          <Button
-            size='small'
-            type="submit"
-            fullWidth
+          <LoadingButton
+            type='submit'
+            loading={mutation.isPending}
             variant="contained"
-            sx={{ mt: 1, mb: 2 }}
+            sx={{ width: '100%', mt: 1 }}
           >
-            Sign In
-          </Button>
+            Login
+          </LoadingButton>
         </Box>
       </Box>
     </Stack>

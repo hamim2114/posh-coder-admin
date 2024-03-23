@@ -1,19 +1,40 @@
+/* eslint-disable react/prop-types */
 import { DeleteForever, DoneAll, Edit } from '@mui/icons-material'
 import { Box, Button, DialogActions, IconButton, Stack, Typography, useTheme } from '@mui/material'
 import React from 'react'
 import CDialog from '../../../common/dialog/CDialog';
 import WebPackageEdit from './WebPackageEdit';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
+import { axiosReq } from '../../../utils/axiosReq';
+import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 
 const WebPackage = ({data}) => {
-  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
-  const handleDialogOpen = () => {
-      setOpenDialog(true);
+
+  const queryClient = useQueryClient();
+    const mutation = useMutation({
+        mutationFn: (id) => axiosReq.delete(`/webpackage/delete/${id}`),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['webpackage']);
+            toast.success('Web Package Deleted!')
+            setOpenDeleteDialog(false)
+        },
+        onError: () => toast.error('Something Went Wrong!')
+    })
+
+  const handleDelete = (id) => {
+    mutation.mutate(id)
+  }
+
+  const handleEditDialogOpen = () => {
+      setOpenEditDialog(true);
   };
 
-  const handleDialogClose = () => {
-      setOpenDialog(false);
+  const handleEditDialogClose = () => {
+      setOpenEditDialog(false);
   };
   const handleDeleteDialogOpen = () => {
       setOpenDeleteDialog(true)
@@ -31,7 +52,7 @@ const WebPackage = ({data}) => {
       <Typography variant='h5' sx={{ fontWeight: 300 }}>{data.price}</Typography>
       <Box>
         {
-          data?.info.map((d, i) => (
+          data?.details?.map((d, i) => (
             <Stack key={i} direction='row' gap={2} mb={1}>
               <DoneAll sx={{ color: 'gray' }} />
               <Typography>{d}</Typography>
@@ -40,22 +61,25 @@ const WebPackage = ({data}) => {
         }
       </Box>
       <Stack direction={'row'} gap={2}>
-        <Button size='small' onClick={handleDialogOpen} sx={{ flexGrow: 1 }} variant='outlined' startIcon={<Edit />}>Edit</Button>
+        <Button size='small' onClick={handleEditDialogOpen} sx={{ flexGrow: 1 }} variant='outlined' startIcon={<Edit />}>Edit</Button>
         <Button onClick={handleDeleteDialogOpen} size='small' variant='contained'><DeleteForever /></Button>
       </Stack>
       {/* delete dialog */}
       <CDialog openDialog={openDeleteDialog} handleDialogClose={handleDeleteDialogClose}>
         <Typography variant='h5' color='gray' mb={2}>Confirm Delete?</Typography>
         <DialogActions>
-          <Button size='small' variant='contained'>Ok</Button>
+          <CLoadingBtn loading={mutation.isPending} handleClick={()=> handleDelete(data._id)}>
+            ok
+          </CLoadingBtn>
+          {/* <Button onClick={()=> handleDelete(data._id)} size='small' variant='contained'>Ok</Button> */}
           <Button size='small' variant='outlined' onClick={handleDeleteDialogClose}>Cancel</Button>
         </DialogActions>
       </CDialog>
       {/* edit dialog  */}
-      <CDialog openDialog={openDialog}>
-        <WebPackageEdit data={data} />
+      <CDialog openDialog={openEditDialog}>
+        <WebPackageEdit data={data} handleDialogClose={handleEditDialogClose} />
         <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button onClick={handleEditDialogClose}>Cancel</Button>
         </DialogActions>
       </CDialog>
     </Stack>

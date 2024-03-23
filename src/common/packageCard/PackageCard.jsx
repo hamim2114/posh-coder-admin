@@ -7,6 +7,7 @@ const PackageCard = ({ children }) => {
     return (
         <Box sx={{
             width: '300px',
+            height: 'fit-content',
             borderRadius: '5px',
             p: 4,
             boxShadow: theme.shadow,

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, DialogActions, Stack, Typography, useTheme } from '@mui/material';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -8,8 +8,11 @@ import PackageCard from '../../../common/packageCard/PackageCard';
 import { Add } from '@mui/icons-material';
 import CDialog from '../../../common/dialog/CDialog';
 import WebPackageCreate from './WebPackageCreate';
-import WebTamplate from './WebTamplate';
+import WebTemplate from './WebTemplate';
 import WebPackage from './WebPackage';
+import { useQuery } from '@tanstack/react-query';
+import { axiosReq } from '../../../utils/axiosReq';
+import LoadingBar from '../../../common/loadingBar/LoadingBar';
 
 export const webPackageData = [
   {
@@ -117,7 +120,7 @@ function CustomTabPanel(props) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          {children}
         </Box>
       )}
     </div>
@@ -143,6 +146,11 @@ const WebDev = () => {
   const [createDialogOpen, setCreateDialogOpen] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(0);
 
+  const { isLoading, error, data: allWebpackage } = useQuery({
+    queryKey: ['webpackage'],
+    queryFn: () => axiosReq.get('/webpackage/getall').then(res => res.data)
+  });
+
   const theme = useTheme()
 
   const handleDialogOpen = () => {
@@ -161,7 +169,6 @@ const WebDev = () => {
       p: { xs: 2, md: 4 }
     }}>
       <Typography variant='h5' mb={6} color={theme.palette.primary.main}>Website Development</Typography>
-
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={tabValue} onChange={handleTabValueChange} aria-label="basic tabs example">
@@ -170,25 +177,27 @@ const WebDev = () => {
           </Tabs>
         </Box>
         <CustomTabPanel value={tabValue} index={0}>
-            <Button sx={{ mt: 3 }} onClick={handleDialogOpen} startIcon={<Add />} variant='contained'>Create</Button>
+          <Button sx={{ mt: 3 }} onClick={handleDialogOpen} startIcon={<Add />} variant='contained'>Create</Button>
           <CDialog openDialog={createDialogOpen}>
-            <WebPackageCreate />
+            <WebPackageCreate handleDialogClose={handleDialogClose} />
             <DialogActions>
               <Button onClick={handleDialogClose}>Cancel</Button>
             </DialogActions>
           </CDialog>
           <Stack direction={'row'} flexWrap={'wrap'} justifyContent={'center'} gap={{ xs: 5, md: 5 }} mt={7}>
             {
-              webPackageData.map((data, i) => (
-                <PackageCard key={i}>
-                  <WebPackage data={data} />
-                </PackageCard>
-              ))
+              isLoading ? <LoadingBar/> : error? 'Something went wrong!' : (
+                allWebpackage?.map((data, i) => (
+                  <PackageCard key={i}>
+                    <WebPackage data={data} />
+                  </PackageCard>
+                ))
+              )
             }
           </Stack>
         </CustomTabPanel>
         <CustomTabPanel value={tabValue} index={1}>
-          <WebTamplate />
+          <WebTemplate />
         </CustomTabPanel>
       </Box>
 
