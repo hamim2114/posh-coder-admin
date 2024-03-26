@@ -9,7 +9,7 @@ import { deleteImage, uploadImage } from '../../../utils/upload';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 import LoadingBar from '../../../common/loadingBar/LoadingBar';
 
-const WebTemplate = () => {
+const GraphicTemplate = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [input, setInput] = useState({})
@@ -20,9 +20,9 @@ const WebTemplate = () => {
 
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: (input) => axiosReq.post('/webtemplate/create', input),
+    mutationFn: (input) => axiosReq.post('/graphictemplate/create', input),
     onSuccess: () => {
-      queryClient.invalidateQueries(['webtamplate']);
+      queryClient.invalidateQueries(['graphictemplate']);
       toast.success('Upload Success!')
       setOpenAddDialog(false)
       setFile('')
@@ -31,9 +31,9 @@ const WebTemplate = () => {
     onError: () => toast.error('Something went wrong!')
   })
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/webtemplate/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/graphictemplate/delete/${id}`),
     onSuccess: (res) => {
-      queryClient.invalidateQueries(['webtamplate']);
+      queryClient.invalidateQueries(['graphictemplate']);
       toast.success(res.data)
       setOpenDeleteDialog(false)
     },
@@ -43,8 +43,8 @@ const WebTemplate = () => {
   })
 
   const { isLoading, error, data: alltamplate } = useQuery({
-    queryKey: ['webtamplate'],
-    queryFn: () => axiosReq.get('/webtemplate/getall').then(res => res.data)
+    queryKey: ['graphictemplate'],
+    queryFn: () => axiosReq.get('/graphictemplate/getall').then(res => res.data)
   });
 
   const handleInputChange = (e) => {
@@ -63,7 +63,7 @@ const WebTemplate = () => {
 
   const handleSubmit = async () => {
     try {
-      if (!file || !input.name || !input.company) {
+      if (!file || !input.name || !input.category) {
         return;
       }
       setCloudinaryLoading(true)
@@ -109,9 +109,8 @@ const WebTemplate = () => {
             <Stack direction='row' gap={1}>{file && file.name}{file && <Close sx={{ cursor: 'pointer' }} onClick={() => setFile('')} />}</Stack>
           </Stack>
           <input required onChange={e => setFile(e.target.files[0])} type="file" name="" id="upload-file" accept='jpg,png' hidden />
-          <TextField required onChange={handleInputChange} name='name' id="standard-basic" label="Tamplate Name" placeholder='e.g. Home Solutions Provider' variant="outlined" size='small' />
-          <TextField required onChange={handleInputChange} name='company' id="standard-basic" label="Company Name" variant="outlined" placeholder='e.g. Digital Dreams Ltd' size='small' />
-          <TextField onChange={handleInputChange} name='link' id="standard-basic" label="Link" placeholder='e.g. https://demo.com' variant="outlined" size='small' />
+          <TextField required onChange={handleInputChange} name='category' id="standard-basic" label="Category" placeholder='e.g. Branding' variant="outlined" size='small' />
+          <TextField required onChange={handleInputChange} name='name' id="standard-basic" label="Name" variant="outlined" placeholder='e.g. Logo Design' size='small' />
         </Stack>
         <DialogActions>
           <Button onClick={handleAddDialogClose}>Cancel</Button>
@@ -143,8 +142,8 @@ const WebTemplate = () => {
                 }}>
                   <img style={{ width: '100%', height: '100%', objectFit: 'cover' }} src={item.imgUrl} alt="" />
                 </Box>
-                <Typography variant='h5' mt={1}>{item.company}</Typography>
-                <Typography variant='body2'>{item.name}</Typography>
+                <Typography variant='h5' mt={1}>{item.name}</Typography>
+                <Typography variant='body2'>{item.category}</Typography>
                 <Typography>{item?.link}</Typography>
               </Box>
             )
@@ -155,4 +154,4 @@ const WebTemplate = () => {
   )
 }
 
-export default WebTemplate
+export default GraphicTemplate

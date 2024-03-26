@@ -16,7 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { Avatar, Collapse, Drawer, Menu, MenuItem, useMediaQuery } from '@mui/material';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AutoAwesomeMotion, ExpandLess, ExpandMore, Logout, PeopleAlt, Person, ShoppingCart, SpaceDashboard, StickyNote2, Workspaces } from '@mui/icons-material';
+import { AutoAwesomeMotion, ExpandLess, ExpandMore,LocalPolice, Logout, PeopleAlt, Person, ShoppingCart, SpaceDashboard, StickyNote2, Workspaces } from '@mui/icons-material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosReq } from '../../utils/axiosReq';
 import toast from 'react-hot-toast';
@@ -79,12 +79,13 @@ const drawerList = [
       { name: 'Website Development', path: '/admin/service/web' },
       { name: 'App Development', path: '/admin/service/app' },
       { name: 'Graphic Design', path: '/admin/service/graphic' },
-      { name: 'Digital Marketing', path: '/admin/service/marketing' },
-      { name: 'Content Creation', path: '/admin/service/content' }
+      // { name: 'Digital Marketing', path: '/admin/service/marketing' },
+      // { name: 'Content Creation', path: '/admin/service/content' }
     ]
   },
-  { name: 'Teams', icon: <Workspaces />, path: '/admin/teams' },
-  { name: 'Blogs', icon: <StickyNote2 />, path: '/admin/blogs' },
+  { name: 'Teams', icon: <Workspaces />, path: '/admin/team' },
+  { name: 'Blogs', icon: <StickyNote2 />, path: '/admin/blog' },
+  { name: 'Trust By', icon: <LocalPolice />, path: '/admin/trustby' },
 ]
 
 export default function Layout() {

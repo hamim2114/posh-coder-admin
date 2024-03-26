@@ -9,7 +9,7 @@ import { deleteImage, uploadImage } from '../../../utils/upload';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 import LoadingBar from '../../../common/loadingBar/LoadingBar';
 
-const WebTemplate = () => {
+const AppTemplate = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [input, setInput] = useState({})
@@ -20,9 +20,9 @@ const WebTemplate = () => {
 
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: (input) => axiosReq.post('/webtemplate/create', input),
+    mutationFn: (input) => axiosReq.post('/apptemplate/create', input),
     onSuccess: () => {
-      queryClient.invalidateQueries(['webtamplate']);
+      queryClient.invalidateQueries(['apptemplate']);
       toast.success('Upload Success!')
       setOpenAddDialog(false)
       setFile('')
@@ -31,9 +31,9 @@ const WebTemplate = () => {
     onError: () => toast.error('Something went wrong!')
   })
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/webtemplate/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/apptemplate/delete/${id}`),
     onSuccess: (res) => {
-      queryClient.invalidateQueries(['webtamplate']);
+      queryClient.invalidateQueries(['apptemplate']);
       toast.success(res.data)
       setOpenDeleteDialog(false)
     },
@@ -43,8 +43,8 @@ const WebTemplate = () => {
   })
 
   const { isLoading, error, data: alltamplate } = useQuery({
-    queryKey: ['webtamplate'],
-    queryFn: () => axiosReq.get('/webtemplate/getall').then(res => res.data)
+    queryKey: ['apptemplate'],
+    queryFn: () => axiosReq.get('/apptemplate/getall').then(res => res.data)
   });
 
   const handleInputChange = (e) => {
@@ -155,4 +155,4 @@ const WebTemplate = () => {
   )
 }
 
-export default WebTemplate
+export default AppTemplate

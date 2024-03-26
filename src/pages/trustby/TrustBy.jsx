@@ -1,18 +1,17 @@
 import React, { useState } from 'react'
 import { Box, Button, DialogActions, Stack, TextField, Typography } from '@mui/material'
 import { Add, Close, FileUpload } from '@mui/icons-material';
-import CDialog from '../../../common/dialog/CDialog';
+import CDialog from '../../common/dialog/CDialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { axiosReq } from '../../../utils/axiosReq';
+import { axiosReq } from '../../utils/axiosReq';
 import toast from 'react-hot-toast';
-import { deleteImage, uploadImage } from '../../../utils/upload';
-import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
-import LoadingBar from '../../../common/loadingBar/LoadingBar';
+import { deleteImage, uploadImage } from '../../utils/upload';
+import CLoadingBtn from '../../common/loadingButton/CLoadingBtn';
+import LoadingBar from '../../common/loadingBar/LoadingBar';
 
-const WebTemplate = () => {
+const TrustBy = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [input, setInput] = useState({})
   const [file, setFile] = useState('');
   const [deleteItemData, setDeleteItemData] = useState({})
   const [cloudinaryLoading, setCloudinaryLoading] = useState(false)
@@ -20,20 +19,19 @@ const WebTemplate = () => {
 
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: (input) => axiosReq.post('/webtemplate/create', input),
+    mutationFn: (input) => axiosReq.post('/trustby/create', input),
     onSuccess: () => {
-      queryClient.invalidateQueries(['webtamplate']);
+      queryClient.invalidateQueries(['trustby']);
       toast.success('Upload Success!')
       setOpenAddDialog(false)
       setFile('')
-      setInput({})
     },
     onError: () => toast.error('Something went wrong!')
   })
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/webtemplate/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/trustby/delete/${id}`),
     onSuccess: (res) => {
-      queryClient.invalidateQueries(['webtamplate']);
+      queryClient.invalidateQueries(['trustby']);
       toast.success(res.data)
       setOpenDeleteDialog(false)
     },
@@ -42,14 +40,10 @@ const WebTemplate = () => {
     }
   })
 
-  const { isLoading, error, data: alltamplate } = useQuery({
-    queryKey: ['webtamplate'],
-    queryFn: () => axiosReq.get('/webtemplate/getall').then(res => res.data)
+  const { isLoading, error, data: allImg } = useQuery({
+    queryKey: ['trustby'],
+    queryFn: () => axiosReq.get('/trustby/getAll').then(res => res.data)
   });
-
-  const handleInputChange = (e) => {
-    setInput({ ...input, [e.target.name]: e.target.value })
-  }
 
   const handleDelete = async () => {
     if (deleteItemData.imgId && deleteItemData._id) {
@@ -63,14 +57,13 @@ const WebTemplate = () => {
 
   const handleSubmit = async () => {
     try {
-      if (!file || !input.name || !input.company) {
-        return;
-      }
-      setCloudinaryLoading(true)
-      const { public_id, secure_url } = await uploadImage(file);
-      setCloudinaryLoading(false)
-      if (public_id) {
-        createMutation.mutate({ imgId: public_id, imgUrl: secure_url, ...input })
+      if (file) {
+        setCloudinaryLoading(true)
+        const { public_id, secure_url } = await uploadImage(file);
+        setCloudinaryLoading(false)
+        if (public_id) {
+          createMutation.mutate({ imgId: public_id, imgUrl: secure_url })
+        }
       }
     } catch (error) {
       console.log(error)
@@ -109,9 +102,6 @@ const WebTemplate = () => {
             <Stack direction='row' gap={1}>{file && file.name}{file && <Close sx={{ cursor: 'pointer' }} onClick={() => setFile('')} />}</Stack>
           </Stack>
           <input required onChange={e => setFile(e.target.files[0])} type="file" name="" id="upload-file" accept='jpg,png' hidden />
-          <TextField required onChange={handleInputChange} name='name' id="standard-basic" label="Tamplate Name" placeholder='e.g. Home Solutions Provider' variant="outlined" size='small' />
-          <TextField required onChange={handleInputChange} name='company' id="standard-basic" label="Company Name" variant="outlined" placeholder='e.g. Digital Dreams Ltd' size='small' />
-          <TextField onChange={handleInputChange} name='link' id="standard-basic" label="Link" placeholder='e.g. https://demo.com' variant="outlined" size='small' />
         </Stack>
         <DialogActions>
           <Button onClick={handleAddDialogClose}>Cancel</Button>
@@ -132,20 +122,17 @@ const WebTemplate = () => {
         </CDialog>
         {
           isLoading ? <LoadingBar /> : error ? 'Something went wrong!' : (
-            alltamplate.map((item) => (
+            allImg.map((item) => (
               <Box key={item._id} sx={{
                 width: '250px',
               }}>
                 <Button onClick={() => handleDeleteDialogOpen(item)}>Remove</Button>
                 <Box sx={{
                   width: '100%',
-                  height: '350px'
+                  height: '200px'
                 }}>
                   <img style={{ width: '100%', height: '100%', objectFit: 'cover' }} src={item.imgUrl} alt="" />
                 </Box>
-                <Typography variant='h5' mt={1}>{item.company}</Typography>
-                <Typography variant='body2'>{item.name}</Typography>
-                <Typography>{item?.link}</Typography>
               </Box>
             )
             ))
@@ -155,4 +142,4 @@ const WebTemplate = () => {
   )
 }
 
-export default WebTemplate
+export default TrustBy

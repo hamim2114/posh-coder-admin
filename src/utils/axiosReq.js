@@ -1,7 +1,8 @@
-import axios from 'axios'
+import axios from 'axios';
+
+const baseURL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://posh-coder-server.vercel.app/api';
 
 export const axiosReq = axios.create({
-  // baseURL: 'http://localhost:5000/api',
-  baseURL: 'https://posh-coder-server.vercel.app/api',
+  baseURL: baseURL,
   withCredentials: true
-})
+});

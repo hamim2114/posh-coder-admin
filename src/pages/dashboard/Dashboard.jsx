@@ -9,7 +9,7 @@ const Dashboard = () => {
   const matches = useMediaQuery('(max-width:600px)')
   const cardStyle = {
     main: {
-      width: matches ? '100%' : '280px',
+      width: matches ? '250px' : '280px',
       height: '100px',
       px: 5,
       border: '1px solid lightgray',

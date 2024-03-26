@@ -1,14 +1,8 @@
-#root {
-  /* max-width: 1280px; */
-  /* margin: 0 auto; */
-  /* padding: 2rem; */
-  /* background-color: #F2F6FC; */
-}
-*{
-  /* margin: 0;
-  padding: 0; */
-}
 .link {
   text-decoration: none;
   color: inherit;
+}
+
+.ql-editor {
+  height: 300px;
 }
