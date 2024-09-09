@@ -6,3 +6,8 @@
 .ql-editor {
   height: 300px;
 }
+
+.MuiDataGrid-cell:focus,
+.MuiDataGrid-cell:focus-within {
+  outline: none !important;
+}

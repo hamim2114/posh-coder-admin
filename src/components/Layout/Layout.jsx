@@ -16,7 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { Avatar, Collapse, Drawer, Menu, MenuItem, useMediaQuery } from '@mui/material';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AutoAwesomeMotion, ExpandLess, ExpandMore,LocalPolice, Logout, PeopleAlt, Person, ShoppingCart, SpaceDashboard, StickyNote2, Workspaces } from '@mui/icons-material';
+import { AutoAwesomeMotion, ExpandLess, ExpandMore, LocalPolice, Logout, PeopleAlt, Person, ShoppingCart, SpaceDashboard, StickyNote2, Workspaces } from '@mui/icons-material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosReq } from '../../utils/axiosReq';
 import toast from 'react-hot-toast';
@@ -68,12 +68,12 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-const drawerList = [
+const navLinks = [
   { name: 'Dashboard', icon: <SpaceDashboard />, path: '/admin/dashboard' },
   { name: 'Users', icon: <PeopleAlt />, path: '/admin/users' },
   { name: 'Orders', icon: <ShoppingCart />, path: '/admin/orders' },
   {
-    name: 'Services',
+    name: 'Servicess',
     icon: < AutoAwesomeMotion />,
     more: [
       { name: 'Website Development', path: '/admin/service/web' },
@@ -92,7 +92,17 @@ export default function Layout() {
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = React.useState(true);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [expandedNavlinkIndex, setExpandedNavlinkIndex] = React.useState(null)
   const [serviceListOpen, setServiceListOpen] = React.useState(false)
+
+
+  const handleExpandedNavlink = (index) => {
+    if (expandedNavlinkIndex === index) {
+      setExpandedNavlinkIndex(null)
+    } else {
+      setExpandedNavlinkIndex(index)
+    }
+  }
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
@@ -202,7 +212,7 @@ export default function Layout() {
         </DrawerHeader>
         {/* <Divider /> */}
         <List>
-          {drawerList.map((item, index) => (
+          {navLinks.map((item, index) => (
             <ListItem disablePadding key={index} sx={{ display: 'block' }}>
               {item.more ?
                 (
@@ -213,17 +223,17 @@ export default function Layout() {
                         color: 'gray',
                         bgcolor: item.path === pathname ? theme.palette.primary.main : '',
                         ":hover": { bgcolor: theme.palette.primary.main, color: '#fff' }
-                      }} onClick={() => setServiceListOpen(p => !p)}>
+                      }} onClick={() => handleExpandedNavlink(index)}>
                         <ListItemIcon sx={{ minWidth: 0, mr: 1.5, color: 'inherit' }}>
                           {item.icon}
                         </ListItemIcon>
                         <ListItemText primary={item.name} sx={{
                           opacity: drawerOpen ? 1 : 0,
                         }} />
-                        {serviceListOpen ? <ExpandLess /> : <ExpandMore />}
+                        {expandedNavlinkIndex === index ? <ExpandLess /> : <ExpandMore />}
                       </ListItemButton>
                     </Link>
-                    <Collapse in={serviceListOpen} timeout="auto" unmountOnExit>
+                    <Collapse in={expandedNavlinkIndex === index} timeout="auto" unmountOnExit>
                       <List component="div">
                         {
                           item?.more?.map((i, id) => (

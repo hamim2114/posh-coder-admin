@@ -68,7 +68,7 @@ const Dashboard = () => {
             <Button size='small' variant='contained'>View All</Button>
           </Stack>
           <Box>
-            <DataTable />
+            {/* <DataTable /> */}
           </Box>
         </Box>
         <Box sx={{
@@ -81,7 +81,7 @@ const Dashboard = () => {
                 <Stack key={id} direction='row' gap={2} alignItems='center'>
                   <Avatar />
                   <Box>
-                    <Typography sx={{ fontSize: '17px',color: 'gray' }}>John Abraham</Typography>
+                    <Typography sx={{ fontSize: '17px', color: 'gray' }}>John Abraham</Typography>
                     <Typography fontSize='14px'>Order: 2</Typography>
                   </Box>
                 </Stack>

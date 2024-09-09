@@ -12,13 +12,16 @@ import Graphic from './pages/services/graphic/Graphic'
 import Team from './pages/team/Team'
 import Blog from './pages/blog/Blog'
 import TrustBy from './pages/trustby/TrustBy'
+import Order from './pages/order/Order'
+import OrderDetails from './pages/order/OrderDetails'
+import UserDetails from './pages/user/UserDetails'
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('poshcoder'))
-  
+
   useEffect(() => {
     setToken(localStorage.getItem('poshcoder'))
-  },[])
+  }, [])
 
   return (
     <Routes>
@@ -27,12 +30,15 @@ function App() {
       <Route element={token ? <Layout /> : <Login />}>
         <Route path='admin/dashboard' element={<Dashboard />} />
         <Route path='admin/users' element={<User />} />
-        <Route path='admin/service/web' element={<WebDev/>} />
-        <Route path='admin/service/app' element={<AppDev/>} />
-        <Route path='admin/service/graphic' element={<Graphic/>} />
-        <Route path='admin/team' element={<Team/>} />
-        <Route path='admin/blog' element={<Blog/>} />
-        <Route path='admin/trustby' element={<TrustBy/>} />
+        <Route path='admin/users/details/:id' element={<UserDetails />} />
+        <Route path='admin/orders' element={<Order />} />
+        <Route path='admin/orders/details/:id' element={<OrderDetails />} />
+        <Route path='admin/service/web' element={<WebDev />} />
+        <Route path='admin/service/app' element={<AppDev />} />
+        <Route path='admin/service/graphic' element={<Graphic />} />
+        <Route path='admin/team' element={<Team />} />
+        <Route path='admin/blog' element={<Blog />} />
+        <Route path='admin/trustby' element={<TrustBy />} />
         <Route path='*' element={<NotFound />} />
       </Route>
     </Routes>

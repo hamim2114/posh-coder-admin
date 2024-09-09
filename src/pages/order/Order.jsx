@@ -11,14 +11,14 @@ import useIsMobile from '../../hook/useIsMobile';
 import { Call, DeleteOutline, EditOutlined, EmailOutlined, Error, Search } from '@mui/icons-material';
 import CDialog from '../../common/dialog/CDialog';
 import CButton from '../../common/CButton';
-import UpdateUser from './UpdateUser';
+import UpdateOrder from './UpdateOrder';
 import toast from 'react-hot-toast';
 
-const User = () => {
-  const [userUpdateData, setUserUpdateData] = useState({})
-  const [updateDialogOpen, setUpdateDialogOpen] = useState(false)
+const Order = () => {
+  const [orderUpdateData, setOrderUpdateData] = useState({})
+  const [orderUpdateDialogOpen, setOrderUpdateDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [deleteUserId, setDeleteUserId] = useState(null)
+  const [deleteOrderId, setDeleteOrderId] = useState(null)
   const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false)
   const [searchText, setSearchText] = useState(null)
   const [statusFilter, setStatusFilter] = useState('')
@@ -29,9 +29,10 @@ const User = () => {
 
   const queryClient = useQueryClient();
 
-  const { isLoading, error, data: users } = useQuery({
-    queryKey: ['users', statusFilter, searchText],
+  const { isLoading, error, data: orders } = useQuery({
+    queryKey: ['orders', statusFilter, searchText], // Key includes statusFilter and searchText
     queryFn: () => {
+      // Build query string for status and search
       let queryString = '';
 
       if (statusFilter && statusFilter !== 'all') {
@@ -42,14 +43,15 @@ const User = () => {
         queryString += queryString ? `&search=${searchText}` : `?search=${searchText}`;
       }
 
-      return axiosReq.get(`/auth/users${queryString}`).then((res) => res.data);
+      return axiosReq.get(`/order/orders${queryString}`).then((res) => res.data);
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/auth/users/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/order/delete/${deleteOrderId}`),
     onSuccess: (res) => {
-      queryClient.invalidateQueries(['auth']);
+      queryClient.invalidateQueries(['order']);
+      console.log(res)
       toast.success(res.data.message)
       setDeleteDialogOpen(false)
     },
@@ -60,27 +62,40 @@ const User = () => {
 
 
   const handleDelete = async () => {
-    if (deleteUserId) {
-      deleteMutation.mutate(deleteUserId)
+    if (deleteOrderId) {
+      deleteMutation.mutate(deleteOrderId)
     }
   }
 
   function handleEdit(row) {
-    setUpdateDialogOpen(true)
-    setUserUpdateData(row)
+    setOrderUpdateDialogOpen(true)
+    setOrderUpdateData(row)
   }
 
   function handleDeleteDialog(row) {
     setDeleteDialogOpen(true)
-    setDeleteUserId(row._id)
+    setDeleteOrderId(row._id)
   }
 
 
   const columns = [
     {
-      field: 'Info', width: 300,
+      field: 'id', headerName: '', width: 250,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Info</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>ID</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+          <Link to={`/admin/orders/details/${params.row._id}`}>
+            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>#{params.row._id}</Typography>
+          </Link>
+        </Stack>
+      ),
+    },
+    {
+      field: 'User', width: 250,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>User</Typography>
       ),
       renderCell: (params) => {
         const { row } = params;
@@ -88,45 +103,47 @@ const User = () => {
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={2}>
             <Avatar src='' />
             <Stack>
-              <Link to={`/admin/users/details/${row._id}`}>
+              <Link to={`/dashboard/customers/details/${row.userId}`}>
                 <Typography sx={{
                   fontSize: '14px',
                   fontWeight: 600,
-                }}>@{row.username}
+                }}> {row.name}
                 </Typography>
               </Link>
               <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <EmailOutlined sx={{ fontSize: '18px', color: 'gray' }} /> {row.email}</Typography>
+              <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <Call sx={{ fontSize: '18px', color: 'gray' }} /> {row.phone}</Typography>
             </Stack>
           </Stack>
         )
       }
     },
     {
-      field: 'Phone', headerName: '', width: 200,
+      field: 'Date', width: 200,
       renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Phone</Typography>
-      ),
-      renderCell: (params) => (
-        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <Call sx={{ fontSize: '18px', color: 'gray' }} /> {params.row.phone}</Typography>
-        </Stack>
-      )
-    },
-    {
-      field: 'Date', width: 150,
-      renderHeader: () => (
-        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Join Date</Typography>
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order Date</Typography>
       ),
       renderCell: (params) => {
         return (
           <Stack sx={{ height: '100%' }} justifyContent='center'>
-            <Typography > {format(params.row.createdAt, 'dd-MM-yyyy')}
+            <Typography sx={{ fontSize: { xs: '12px', md: '16px' } }}> <b>{format(params.row.createdAt, 'dd-MM-yyyy')}</b>
             </Typography>
           </Stack>
         )
       }
     },
-
+    {
+      field: 'Service', headerName: '', width: 200,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Service</Typography>
+      ),
+      renderCell: (params) => (
+        <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
+          <Typography sx={{ fontSize: { xs: '12px', md: '16px' }, fontWeight: 600 }}>
+            {params.row.orderName}
+          </Typography>
+        </Stack>
+      )
+    },
     {
       field: 'status', headerName: 'Status', width: 220,
       renderHeader: () => (
@@ -139,14 +156,24 @@ const User = () => {
             <Box sx={{
               ml: 5,
               display: 'inline-flex',
-              padding: '3px 12px',
-              bgcolor: row.isVerified ? 'green' : 'darkgray',
+              padding: '5px 12px',
+              bgcolor: row.status === 'cancelled'
+                ? 'red'
+                : row.status === 'confirmed'
+                  ? '#386FA8'
+                  : row.status === 'delivered'
+                    ? 'green'
+                    : row.status === 'processing'
+                      ? '#419BD2'
+                      : 'purple',
               color: '#fff',
               borderRadius: '4px',
             }}>
-              <Typography sx={{ textAlign: 'center' }} variant='body2'>{row.isVerified ? ' Verified' : 'Unverified'}</Typography>
+              <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>{row.status}</Typography>
             </Box>
-            {row.isVerified}
+            {row.status === 'placed' &&
+              <Typography sx={{ color: 'green' }} variant='body2'>new</Typography>
+            }
           </Stack>
         )
       }
@@ -189,7 +216,7 @@ const User = () => {
   return (
     <Box>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
-        <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>All Users</Typography>
+        <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order History</Typography>
         <Typography sx={{
           fontSize: '12px',
           fontWeight: 600,
@@ -197,14 +224,14 @@ const User = () => {
           borderRadius: '4px',
           color: 'primary.main',
           px: 1
-        }}>({users?.length})</Typography>
+        }}>({orders?.length})</Typography>
       </Stack>
       <Stack direction='row' gap={2}>
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          maxWidth: '300px',
+          maxWidth: '500px',
           bgcolor: '#fff',
           width: '100%',
           height: 'fit-content',
@@ -212,13 +239,30 @@ const User = () => {
           borderRadius: '4px',
           pl: 2
         }}>
-          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='Username / Email' />
+          <Input onChange={(e) => setSearchText(e.target.value)} fullWidth disableUnderline placeholder='ID / Name / Email' />
           <IconButton><Search /></IconButton>
+        </Box>
+        <Box sx={{ minWidth: { xs: 150, md: 200 } }}>
+          <FormControl size='small' fullWidth>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Status"
+              onChange={e => setStatusFilter(e.target.value)}
+            >
+              <MenuItem value={'all'}>All </MenuItem>
+              <MenuItem value={'placed'}>Placed</MenuItem>
+              <MenuItem value={'confirmed'}>Confirmed</MenuItem>
+              <MenuItem value={'processing'}>Processing</MenuItem>
+              <MenuItem value={'delivered'}>Delivered</MenuItem>
+              <MenuItem value={'cancelled'}>Cancelled</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
       </Stack>
       {/* update Order */}
-      <CDialog maxWidth='md' onClose={() => setUpdateDialogOpen(false)} openDialog={updateDialogOpen}>
-        <UpdateUser data={userUpdateData} closeDialog={() => setUpdateDialogOpen(false)} />
+      <CDialog maxWidth='md' onClose={() => setOrderUpdateDialogOpen(false)} openDialog={orderUpdateDialogOpen}>
+        <UpdateOrder data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />
       </CDialog>
       {/* delete Order */}
       <CDialog onClose={() => setDeleteDialogOpen(false)} maxWidth='sm' openDialog={deleteDialogOpen}>
@@ -240,7 +284,7 @@ const User = () => {
               getRowId={(row) => row._id}
               rowHeight={80}
               columns={columns}
-              rows={users || []}
+              rows={orders || []}
             />
         }
       </Box>
@@ -248,4 +292,4 @@ const User = () => {
   )
 }
 
-export default User
+export default Order
