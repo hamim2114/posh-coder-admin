@@ -146,7 +146,6 @@ const User = () => {
             }}>
               <Typography sx={{ textAlign: 'center' }} variant='body2'>{row.isVerified ? ' Verified' : 'Unverified'}</Typography>
             </Box>
-            {row.isVerified}
           </Stack>
         )
       }
@@ -187,7 +186,7 @@ const User = () => {
   ]
 
   return (
-    <Box>
+    <Box maxWidth='xl'>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>All Users</Typography>
         <Typography sx={{

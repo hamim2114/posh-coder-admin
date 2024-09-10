@@ -1,6 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import { Navigate, Route, Routes } from 'react-router-dom'
-import Layout from './components/Layout/Layout'
+import Layout from './pages/Layout'
 import Dashboard from './pages/dashboard/Dashboard'
 import User from './pages/user/User'
 import Login from './pages/login/Login'
@@ -13,7 +13,6 @@ import Team from './pages/team/Team'
 import Blog from './pages/blog/Blog'
 import TrustBy from './pages/trustby/TrustBy'
 import Order from './pages/order/Order'
-import OrderDetails from './pages/order/OrderDetails'
 import UserDetails from './pages/user/UserDetails'
 
 function App() {
@@ -32,7 +31,6 @@ function App() {
         <Route path='admin/users' element={<User />} />
         <Route path='admin/users/details/:id' element={<UserDetails />} />
         <Route path='admin/orders' element={<Order />} />
-        <Route path='admin/orders/details/:id' element={<OrderDetails />} />
         <Route path='admin/service/web' element={<WebDev />} />
         <Route path='admin/service/app' element={<AppDev />} />
         <Route path='admin/service/graphic' element={<Graphic />} />

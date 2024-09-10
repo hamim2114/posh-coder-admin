@@ -18,7 +18,7 @@ import { Avatar, Collapse, Drawer, Menu, MenuItem, useMediaQuery } from '@mui/ma
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AutoAwesomeMotion, ExpandLess, ExpandMore, LocalPolice, Logout, PeopleAlt, Person, ShoppingCart, SpaceDashboard, StickyNote2, Workspaces } from '@mui/icons-material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosReq } from '../../utils/axiosReq';
+import { axiosReq } from '../utils/axiosReq';
 import toast from 'react-hot-toast';
 
 const drawerWidth = 240;

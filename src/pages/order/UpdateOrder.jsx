@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { axiosReq } from '../../utils/axiosReq';
 import toast from 'react-hot-toast';
 import { Box, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
@@ -26,11 +26,20 @@ const UpdateOrder = ({ data, closeDialog }) => {
   });
 
   const handleUpdate = () => {
+    if (status === 'placed') {
+      return toast.error('Status Empty')
+    }
     mutation.mutate({
       status,
       note
     });
   }
+
+  useEffect(() => {
+    setNote(data?.note ?? '')
+    setStatus(data?.status)
+  }, [data])
+
 
   return (
     <Box>

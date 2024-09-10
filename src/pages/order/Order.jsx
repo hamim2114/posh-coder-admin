@@ -13,6 +13,8 @@ import CDialog from '../../common/dialog/CDialog';
 import CButton from '../../common/CButton';
 import UpdateOrder from './UpdateOrder';
 import toast from 'react-hot-toast';
+import SlideDrawer from '../../common/drawer/SlideDrawer';
+import OrderDetails from './OrderDetails';
 
 const Order = () => {
   const [orderUpdateData, setOrderUpdateData] = useState({})
@@ -22,6 +24,20 @@ const Order = () => {
   const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false)
   const [searchText, setSearchText] = useState(null)
   const [statusFilter, setStatusFilter] = useState('')
+  const [orderDetailsData, setOrderDetailsData] = useState({})
+  const [openSlideDrawer, setOpenSlideDrawer] = useState(false);
+
+  const toggleDrawer = (event, data) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+    setOrderDetailsData(data)
+    setOpenSlideDrawer(!openSlideDrawer);
+  };
 
 
 
@@ -30,19 +46,15 @@ const Order = () => {
   const queryClient = useQueryClient();
 
   const { isLoading, error, data: orders } = useQuery({
-    queryKey: ['orders', statusFilter, searchText], // Key includes statusFilter and searchText
+    queryKey: ['orders', statusFilter, searchText],
     queryFn: () => {
-      // Build query string for status and search
       let queryString = '';
-
       if (statusFilter && statusFilter !== 'all') {
         queryString += `?status=${statusFilter}`;
       }
-
       if (searchText) {
         queryString += queryString ? `&search=${searchText}` : `?search=${searchText}`;
       }
-
       return axiosReq.get(`/order/orders${queryString}`).then((res) => res.data);
     },
   });
@@ -60,7 +72,7 @@ const Order = () => {
     }
   })
 
-
+  console.log(orders)
   const handleDelete = async () => {
     if (deleteOrderId) {
       deleteMutation.mutate(deleteOrderId)
@@ -86,10 +98,12 @@ const Order = () => {
       ),
       renderCell: (params) => (
         <Stack sx={{ height: '100%' }} direction='row' alignItems='center'>
-          <Link to={`/admin/orders/details/${params.row._id}`}>
-            <Typography sx={{ fontSize: { xs: '14px', md: '16px' } }}>#{params.row._id}</Typography>
-          </Link>
-        </Stack>
+          <Typography
+            onClick={(event) => toggleDrawer(event, params.row)}
+            sx={{ fontSize: { xs: '14px', md: '16px' }, color: '#6D369B', cursor: 'pointer' }}>
+            #{params.row._id}
+          </Typography>
+        </Stack >
       ),
     },
     {
@@ -103,14 +117,14 @@ const Order = () => {
           <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={2}>
             <Avatar src='' />
             <Stack>
-              <Link to={`/dashboard/customers/details/${row.userId}`}>
+              <Link to={`/admin/users/details/${row.user._id}`}>
                 <Typography sx={{
                   fontSize: '14px',
                   fontWeight: 600,
-                }}> {row.name}
+                }}> {row.user.username}
                 </Typography>
               </Link>
-              <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <EmailOutlined sx={{ fontSize: '18px', color: 'gray' }} /> {row.email}</Typography>
+              <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <EmailOutlined sx={{ fontSize: '18px', color: 'gray' }} /> {row.user.email}</Typography>
               <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <Call sx={{ fontSize: '18px', color: 'gray' }} /> {row.phone}</Typography>
             </Stack>
           </Stack>
@@ -189,7 +203,7 @@ const Order = () => {
         return (
           <Stack direction='row'>
             <IconButton
-              disabled={params.row.status === 'cancelled' || params.row.status === 'delivered'}
+              // disabled={params.row.status === 'cancelled' || params.row.status === 'delivered'}
               sx={{
                 bgcolor: 'light.main',
                 borderRadius: '5px',
@@ -214,7 +228,7 @@ const Order = () => {
   ]
 
   return (
-    <Box>
+    <Box maxWidth='xl'>
       <Stack sx={{ mb: 2 }} direction='row' alignItems='center'>
         <Typography sx={{ fontSize: { xs: '18px', lg: '24px' }, fontWeight: 600 }}>Order History</Typography>
         <Typography sx={{
@@ -260,6 +274,10 @@ const Order = () => {
           </FormControl>
         </Box>
       </Stack>
+      {/* order details page */}
+      <SlideDrawer openSlideDrawer={openSlideDrawer} toggleDrawer={toggleDrawer}>
+        <OrderDetails data={orderDetailsData} toggleDrawer={toggleDrawer} />
+      </SlideDrawer>
       {/* update Order */}
       <CDialog maxWidth='md' onClose={() => setOrderUpdateDialogOpen(false)} openDialog={orderUpdateDialogOpen}>
         <UpdateOrder data={orderUpdateData} closeDialog={() => setOrderUpdateDialogOpen(false)} />

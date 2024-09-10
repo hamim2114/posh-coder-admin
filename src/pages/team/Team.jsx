@@ -14,8 +14,8 @@ import TeamSingle from './TeamSingle';
 
 const Team = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
-  
-  const { isLoading, error, data: alltamplate } = useQuery({
+
+  const { isLoading, error, data: allteam } = useQuery({
     queryKey: ['team'],
     queryFn: () => axiosReq.get('/team/allTeams').then(res => res.data)
   });
@@ -37,7 +37,7 @@ const Team = () => {
       <Stack mt={7} direction={{ xs: 'column', md: 'row' }} flexWrap='wrap' gap={6}>
         {
           isLoading ? <LoadingBar /> : error ? 'Something went wrong!' : (
-            alltamplate.map((item) => (
+            allteam.map((item) => (
               <TeamSingle key={item._id} item={item} />
             )
             ))

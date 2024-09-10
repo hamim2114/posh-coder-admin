@@ -4,7 +4,7 @@ import { DataGrid } from '@mui/x-data-grid'
 import React from 'react'
 
 
-const DataTable = ({ loading, rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
+const DataTable = ({ hideFooter, loading, rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
   return (
     <Box
       maxWidth='1800px'
@@ -13,6 +13,7 @@ const DataTable = ({ loading, rows, getRowId, rowHeight, columns, getRowHeight, 
       }}
     >
       <DataGrid
+        hideFooter={hideFooter}
         // sx={{
         //   boxShadow: 2,
         //   minHeight: '650px',
