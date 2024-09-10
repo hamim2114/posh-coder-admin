@@ -7,14 +7,16 @@ import { Stack } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { axiosReq } from '../../utils/axiosReq';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthProvider';
 
 export default function Login() {
+  const { user, setUser } = useAuth()
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (input) => axiosReq.post('/admin/login', input),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['login']);
-      localStorage.setItem('poshcoder', res.data._id)
+      setUser(res.data._id)
       toast.success('Login Success!')
       window.location.href = "/admin/dashboard";
     },

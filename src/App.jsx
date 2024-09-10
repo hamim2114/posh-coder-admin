@@ -6,7 +6,6 @@ import User from './pages/user/User'
 import Login from './pages/login/Login'
 import NotFound from './pages/notfound/NotFound'
 import WebDev from './pages/services/webDev/WebDev'
-import { useEffect, useState } from 'react'
 import AppDev from './pages/services/appDev/AppDev'
 import Graphic from './pages/services/graphic/Graphic'
 import Team from './pages/team/Team'
@@ -14,19 +13,16 @@ import Blog from './pages/blog/Blog'
 import TrustBy from './pages/trustby/TrustBy'
 import Order from './pages/order/Order'
 import UserDetails from './pages/user/UserDetails'
+import { useAuth } from './context/AuthProvider'
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('poshcoder'))
-
-  useEffect(() => {
-    setToken(localStorage.getItem('poshcoder'))
-  }, [])
-
+  const { user } = useAuth()
+  console.log(user)
   return (
     <Routes>
-      <Route path='/' element={<Navigate to={token ? 'admin/dashboard' : 'admin/login'} />} />
-      <Route path='admin/login' element={token ? <Navigate to='admin/dashboard' /> : <Login />} />
-      <Route element={token ? <Layout /> : <Login />}>
+      <Route path='/' element={<Navigate to={user ? 'admin/dashboard' : 'admin/login'} />} />
+      <Route path='admin/login' element={user ? <Navigate to='admin/dashboard' /> : <Login />} />
+      <Route element={user ? <Layout /> : <Login />}>
         <Route path='admin/dashboard' element={<Dashboard />} />
         <Route path='admin/users' element={<User />} />
         <Route path='admin/users/details/:id' element={<UserDetails />} />

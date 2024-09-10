@@ -14,10 +14,13 @@ import { axiosReq } from '../utils/axiosReq';
 import toast from 'react-hot-toast';
 import { Logout } from '@mui/icons-material';
 import CDrawer from './CDrawer';
+import { useAuth } from '../context/AuthProvider';
 
 const drawerWidth = 260;
 
 function Layout(props) {
+
+  const { setUser } = useAuth()
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
@@ -28,7 +31,6 @@ function Layout(props) {
     mutationFn: () => axiosReq.post('/admin/logout'),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['logout']);
-      localStorage.removeItem('poshcoder')
       window.location.href = 'admin/login'
       toast.success(res.data)
     },
@@ -36,6 +38,7 @@ function Layout(props) {
   })
 
   const handleLogout = () => {
+    setUser(null)
     mutation.mutate()
   }
 
@@ -84,7 +87,7 @@ function Layout(props) {
           </IconButton>
           <Box />
           <ListItem sx={{ width: 'fit-content', }} >
-            <IconButton onClick={() => handleLogout()}>
+            <IconButton onClick={handleLogout}>
               <Logout sx={{ color: '#fff' }} />
             </IconButton>
             <Typography>Logout</Typography>
