@@ -17,7 +17,7 @@ import { useAuth } from './context/AuthProvider'
 
 function App() {
   const { user } = useAuth()
-  console.log(user)
+
   return (
     <Routes>
       <Route path='/' element={<Navigate to={user ? 'admin/dashboard' : 'admin/login'} />} />

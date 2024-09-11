@@ -16,9 +16,9 @@ export default function Login() {
     mutationFn: (input) => axiosReq.post('/admin/login', input),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['login']);
-      setUser(res.data._id)
+      setUser(res.data)
       toast.success('Login Success!')
-      window.location.href = "/admin/dashboard";
+      // window.location.href = "/admin/dashboard";
     },
     onError: (err) => toast.error(err.response.data)
   })

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { axiosReq } from '../../utils/axiosReq';
-import { Box, Typography, Card, CardContent, CircularProgress, Grid, Paper, Stack, Divider, IconButton } from '@mui/material';
+import { Box, Typography, Card, CardContent, CircularProgress, Grid, Paper, Stack, Divider, IconButton, Chip } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 
 const UserDetails = () => {
@@ -37,6 +37,10 @@ const UserDetails = () => {
           <Typography variant="h5" gutterBottom>
             User Details
           </Typography>
+          {
+            !userData &&
+            <Chip color='warning' variant='outlined' label='User_Deleted' />
+          }
           <Typography variant="body1"><strong>Username:</strong> {userData?.username}</Typography>
           <Typography variant="body1"><strong>Email:</strong> {userData?.email}</Typography>
           <Typography variant="body1"><strong>Verified:</strong> {userData?.isVerified ? 'Yes' : 'No'}</Typography>

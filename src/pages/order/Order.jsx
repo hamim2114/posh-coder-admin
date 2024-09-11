@@ -63,7 +63,6 @@ const Order = () => {
     mutationFn: (id) => axiosReq.delete(`/order/delete/${deleteOrderId}`),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['order']);
-      console.log(res)
       toast.success(res.data.message)
       setDeleteDialogOpen(false)
     },
@@ -72,7 +71,6 @@ const Order = () => {
     }
   })
 
-  console.log(orders)
   const handleDelete = async () => {
     if (deleteOrderId) {
       deleteMutation.mutate(deleteOrderId)

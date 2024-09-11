@@ -12,7 +12,6 @@ import UpdateOrder from './UpdateOrder';
 import { ArrowBack } from '@mui/icons-material';
 
 const OrderDetails = ({ data, toggleDrawer }) => {
-  console.log(data)
 
   return (
     <Box>

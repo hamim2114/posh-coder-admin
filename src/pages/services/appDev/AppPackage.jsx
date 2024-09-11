@@ -9,39 +9,38 @@ import toast from 'react-hot-toast';
 import { axiosReq } from '../../../utils/axiosReq';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 
-const AppPackage = ({data}) => {
+const AppPackage = ({ data }) => {
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
 
   const queryClient = useQueryClient();
-    const mutation = useMutation({
-        mutationFn: (id) => axiosReq.delete(`/apppackage/delete/${id}`),
-        onSuccess: (res) => {
-            queryClient.invalidateQueries(['apppackage']);
-            toast.success(res.data)
-            console.log(res)
-            setOpenDeleteDialog(false)
-        },
-        onError: () => toast.error('Something Went Wrong!')
-    })
+  const mutation = useMutation({
+    mutationFn: (id) => axiosReq.delete(`/apppackage/delete/${id}`),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries(['apppackage']);
+      toast.success(res.data)
+      setOpenDeleteDialog(false)
+    },
+    onError: () => toast.error('Something Went Wrong!')
+  })
 
   const handleDelete = (id) => {
     mutation.mutate(id)
   }
 
   const handleEditDialogOpen = () => {
-      setOpenEditDialog(true);
+    setOpenEditDialog(true);
   };
 
   const handleEditDialogClose = () => {
-      setOpenEditDialog(false);
+    setOpenEditDialog(false);
   };
   const handleDeleteDialogOpen = () => {
-      setOpenDeleteDialog(true)
+    setOpenDeleteDialog(true)
   };
   const handleDeleteDialogClose = () => {
-      setOpenDeleteDialog(false)
+    setOpenDeleteDialog(false)
   }
 
   return (
@@ -69,7 +68,7 @@ const AppPackage = ({data}) => {
       <CDialog openDialog={openDeleteDialog} handleDialogClose={handleDeleteDialogClose}>
         <Typography variant='h5' color='gray' mb={2}>Confirm Delete?</Typography>
         <DialogActions>
-          <CLoadingBtn loading={mutation.isPending} handleClick={()=> handleDelete(data._id)}>
+          <CLoadingBtn loading={mutation.isPending} handleClick={() => handleDelete(data._id)}>
             ok
           </CLoadingBtn>
           <Button size='small' variant='outlined' onClick={handleDeleteDialogClose}>Cancel</Button>

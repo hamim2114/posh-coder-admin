@@ -75,7 +75,6 @@ const User = () => {
     setDeleteUserId(row._id)
   }
 
-
   const columns = [
     {
       field: 'Info', width: 300,
@@ -85,7 +84,7 @@ const User = () => {
       renderCell: (params) => {
         const { row } = params;
         return (
-          <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={2}>
+          <Stack sx={{ height: '100%' }} direction='row' alignItems='center' gap={1}>
             <Avatar src='' />
             <Stack>
               <Link to={`/admin/users/details/${row._id}`}>
@@ -113,7 +112,7 @@ const User = () => {
       )
     },
     {
-      field: 'Date', width: 150,
+      field: 'Date', width: 200,
       renderHeader: () => (
         <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Join Date</Typography>
       ),
@@ -122,6 +121,24 @@ const User = () => {
           <Stack sx={{ height: '100%' }} justifyContent='center'>
             <Typography > {format(params.row.createdAt, 'dd-MM-yyyy')}
             </Typography>
+          </Stack>
+        )
+      }
+    },
+    {
+      field: 'Order', width: 200,
+      renderHeader: () => (
+        <Typography sx={{ fontSize: { xs: '12px', fontWeight: 600, lg: '15px' } }}>Order</Typography>
+      ),
+      renderCell: (params) => {
+        const placedOrder = params.row.orders.filter(item => item.status === 'placed')
+        const deliveredOrder = params.row.orders.filter(item => item.status === 'delivered')
+        const cancelledOrder = params.row.orders.filter(item => item.status === 'cancelled')
+        return (
+          <Stack sx={{ height: '100%' }} justifyContent='center'>
+            {/* <Typography sx={{ fontSize: '14px', fontWeight: 500, color: 'purple' }} >Placed: {placedOrder?.length} </Typography> */}
+            <Typography sx={{ fontSize: '14px', fontWeight: 500, color: 'green' }} >Delivered: {deliveredOrder?.length} </Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 500, color: 'red' }} >Cancelled: {cancelledOrder?.length} </Typography>
           </Stack>
         )
       }
