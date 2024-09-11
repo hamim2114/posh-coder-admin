@@ -7,9 +7,9 @@ import React from 'react'
 const DataTable = ({ hideFooter, loading, rows, getRowId, rowHeight, columns, getRowHeight, columnVisibilityModel, checkboxSelection, onRowSelectionModelChange }) => {
   return (
     <Box
-      maxWidth='1800px'
+      maxWidth={{ xs: '90vw' }}
       sx={{
-        width: '100%',
+        // width: '100%',
       }}
     >
       <DataGrid

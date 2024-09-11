@@ -22,7 +22,7 @@ import toast from 'react-hot-toast';
 import { Badge, Collapse, Stack } from '@mui/material';
 
 
-const CDrawer = () => {
+const CDrawer = ({ handleDrawerClose }) => {
   const [expandedNavlinkIndex, setExpandedNavlinkIndex] = React.useState(null)
 
   const handleExpandedNavlink = (index) => {
@@ -80,7 +80,7 @@ const CDrawer = () => {
                   <List component="div">
                     {
                       item?.more?.map((i, id) => (
-                        <NavLink className='link' key={id} to={i.path}>
+                        <NavLink onClick={handleDrawerClose} className='link' key={id} to={i.path}>
                           {
                             ({ isActive }) => (
                               <ListItemButton sx={{
@@ -111,7 +111,7 @@ const CDrawer = () => {
               <NavLink className='link' to={item.path}>
                 {
                   ({ isActive }) => (
-                    <ListItemButton disableGutters sx={{
+                    <ListItemButton onClick={handleDrawerClose} disableGutters sx={{
                       px: 1, mx: 2,
                       borderRadius: '5px',
                       bgcolor: isActive ? 'primary.main' : '',

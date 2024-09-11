@@ -60,7 +60,7 @@ function Layout(props) {
   const drawer = (
     <Box>
       <Typography sx={{ textAlign: 'center', fontSize: '25px', fontWeight: 600, mt: 6 }}>PoshCoder</Typography>
-      <CDrawer />
+      <CDrawer handleDrawerClose={handleDrawerClose} />
     </Box>
   );
 
@@ -127,7 +127,7 @@ function Layout(props) {
       </Box>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { md: `calc(100% - ${drawerWidth}px)` } }}
+        sx={{ flexGrow: 1, p: { xs: 1, md: 3 }, width: { md: `calc(100% - ${drawerWidth}px)` } }}
       >
         <Toolbar />
         <Box maxWidth='xl' sx={{ p: 1 }}>
