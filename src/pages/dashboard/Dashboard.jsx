@@ -65,7 +65,7 @@ const Dashboard = () => {
         <Stack
           sx={{
             border: '1px solid lightgray',
-            maxWidth: '400px',
+            maxWidth: '500px',
             p: 3,
             borderRadius: '12px',
             width: '100%',
@@ -141,7 +141,7 @@ const Dashboard = () => {
           </Stack>
         </Stack>
 
-        <Stack direction="row" flexWrap="wrap" gap={4} mt={4}>
+        <Stack direction="row" flexWrap="wrap" gap={4}>
           {/* Users Card */}
           <Stack
             direction="row"
