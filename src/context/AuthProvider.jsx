@@ -5,21 +5,18 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('admin');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+  const [token, setToken] = useState(localStorage.getItem('poshcoder_admin'))
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('admin', JSON.stringify(user));
+    if (token) {
+      localStorage.setItem('poshcoder_admin', token);
     } else {
-      localStorage.removeItem('admin');
+      localStorage.removeItem('poshcoder_admin');
     }
-  }, [user]);
+  }, [token]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ token, setToken }}>
       {children}
     </AuthContext.Provider>
   );

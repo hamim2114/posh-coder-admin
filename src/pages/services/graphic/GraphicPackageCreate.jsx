@@ -6,6 +6,7 @@ import React, { useState } from 'react'
 import { axiosReq } from '../../../utils/axiosReq';
 import toast from 'react-hot-toast';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
+import { useAuth } from '../../../context/AuthProvider';
 
 const GraphicPackageCreate = ({ handleDialogClose }) => {
     const [packageName, SetPackageName] = useState('')
@@ -13,10 +14,11 @@ const GraphicPackageCreate = ({ handleDialogClose }) => {
     const [inputValue, setInputValue] = useState('');
     const [detailsList, setDetailsList] = useState([]);
 
+    const { token } = useAuth()
 
     const queryClient = useQueryClient();
     const mutation = useMutation({
-        mutationFn: (input) => axiosReq.post('/graphicpackage/create', input),
+        mutationFn: (input) => axiosReq.post('/graphicpackage/create', input, { headers: { Authorization: token } }),
         onSuccess: (res) => {
             queryClient.invalidateQueries(['graphicpackage']);
             toast.success('Graphic Package Created!')
@@ -29,6 +31,10 @@ const GraphicPackageCreate = ({ handleDialogClose }) => {
     })
 
     const handleSubmit = () => {
+        if (!packageName || !packagePrice) {
+            toast.error('All field required')
+            return
+        }
         mutation.mutate({
             name: packageName,
             price: packagePrice,

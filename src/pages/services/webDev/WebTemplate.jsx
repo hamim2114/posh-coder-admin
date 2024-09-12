@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { deleteImage, uploadImage } from '../../../utils/upload';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 import LoadingBar from '../../../common/loadingBar/LoadingBar';
+import { useAuth } from '../../../context/AuthProvider';
 
 const WebTemplate = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -17,10 +18,11 @@ const WebTemplate = () => {
   const [deleteItemData, setDeleteItemData] = useState({})
   const [cloudinaryLoading, setCloudinaryLoading] = useState(false)
 
+  const { token } = useAuth()
 
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: (input) => axiosReq.post('/webtemplate/create', input),
+    mutationFn: (input) => axiosReq.post('/webtemplate/create', input, { headers: { Authorization: token } }),
     onSuccess: () => {
       queryClient.invalidateQueries(['webtamplate']);
       toast.success('Upload Success!')
@@ -31,7 +33,7 @@ const WebTemplate = () => {
     onError: () => toast.error('Something went wrong!')
   })
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/webtemplate/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/webtemplate/delete/${id}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['webtamplate']);
       toast.success(res.data)

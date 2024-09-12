@@ -8,39 +8,41 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { axiosReq } from '../../../utils/axiosReq';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
+import { useAuth } from '../../../context/AuthProvider';
 
-const WebPackage = ({data}) => {
+const WebPackage = ({ data }) => {
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
+  const { token } = useAuth()
 
   const queryClient = useQueryClient();
-    const mutation = useMutation({
-        mutationFn: (id) => axiosReq.delete(`/webpackage/delete/${id}`),
-        onSuccess: () => {
-            queryClient.invalidateQueries(['webpackage']);
-            toast.success('Web Package Deleted!')
-            setOpenDeleteDialog(false)
-        },
-        onError: () => toast.error('Something Went Wrong!')
-    })
+  const mutation = useMutation({
+    mutationFn: (id) => axiosReq.delete(`/webpackage/delete/${id}`, { headers: { Authorization: token } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['webpackage']);
+      toast.success('Web Package Deleted!')
+      setOpenDeleteDialog(false)
+    },
+    onError: () => toast.error('Something Went Wrong!')
+  })
 
   const handleDelete = (id) => {
     mutation.mutate(id)
   }
 
   const handleEditDialogOpen = () => {
-      setOpenEditDialog(true);
+    setOpenEditDialog(true);
   };
 
   const handleEditDialogClose = () => {
-      setOpenEditDialog(false);
+    setOpenEditDialog(false);
   };
   const handleDeleteDialogOpen = () => {
-      setOpenDeleteDialog(true)
+    setOpenDeleteDialog(true)
   };
   const handleDeleteDialogClose = () => {
-      setOpenDeleteDialog(false)
+    setOpenDeleteDialog(false)
   }
 
   return (
@@ -68,7 +70,7 @@ const WebPackage = ({data}) => {
       <CDialog openDialog={openDeleteDialog} handleDialogClose={handleDeleteDialogClose}>
         <Typography variant='h5' color='gray' mb={2}>Confirm Delete?</Typography>
         <DialogActions>
-          <CLoadingBtn loading={mutation.isPending} handleClick={()=> handleDelete(data._id)}>
+          <CLoadingBtn loading={mutation.isPending} handleClick={() => handleDelete(data._id)}>
             ok
           </CLoadingBtn>
           {/* <Button onClick={()=> handleDelete(data._id)} size='small' variant='contained'>Ok</Button> */}

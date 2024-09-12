@@ -7,15 +7,18 @@ import { axiosReq } from '../../utils/axiosReq';
 import CLoadingBtn from '../../common/loadingButton/CLoadingBtn';
 import toast from 'react-hot-toast';
 import { uploadImage } from '../../utils/upload';
+import { useAuth } from '../../context/AuthProvider';
 
-const TeamCreate = ({handleAddDialogClose}) => {
+const TeamCreate = ({ handleAddDialogClose }) => {
   const [input, setInput] = useState({})
   const [file, setFile] = useState('');
   const [cloudinaryLoading, setCloudinaryLoading] = useState(false)
 
+  const { token } = useAuth()
+
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: (input) => axiosReq.post('/team/add', input),
+    mutationFn: (input) => axiosReq.post('/team/add', input, { headers: { Authorization: token } }),
     onSuccess: () => {
       queryClient.invalidateQueries(['team']);
       toast.success('Upload Success!')

@@ -10,15 +10,14 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthProvider';
 
 export default function Login() {
-  const { user, setUser } = useAuth()
+  const { setToken } = useAuth()
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (input) => axiosReq.post('/admin/login', input),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['login']);
-      setUser(res.data)
-      toast.success('Login Success!')
-      // window.location.href = "/admin/dashboard";
+      setToken(res.data.jwt)
+      toast.success(res.data.message)
     },
     onError: (err) => toast.error(err.response.data)
   })

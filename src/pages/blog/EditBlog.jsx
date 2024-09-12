@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import 'react-quill/dist/quill.snow.css';
 import { Button, DialogActions, Stack, TextField } from '@mui/material';
 import CLoadingBtn from '../../common/loadingButton/CLoadingBtn';
+import { useAuth } from '../../context/AuthProvider';
 
 
 const EditBlog = ({ handleEditDialogClose, data }) => {
@@ -14,11 +15,12 @@ const EditBlog = ({ handleEditDialogClose, data }) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('')
   const [errmsg, setErrmsg] = useState('')
-  
+
+  const { token } = useAuth()
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (input) => axiosReq.put(`/blog/edit/${data._id}`, input),
+    mutationFn: (input) => axiosReq.put(`/blog/edit/${data._id}`, input, { headers: { Authorization: token } }),
     onSuccess: () => {
       queryClient.invalidateQueries(['blog']);
       handleEditDialogClose(true);
@@ -32,11 +34,11 @@ const EditBlog = ({ handleEditDialogClose, data }) => {
   }
 
   useEffect(() => {
-   setTitle(data.title)
-   setCategory(data.category)
-   setBody(data.body)
+    setTitle(data.title)
+    setCategory(data.category)
+    setBody(data.body)
   }, [data])
-  
+
 
   const toolbarOptions = {
     toolbar: [

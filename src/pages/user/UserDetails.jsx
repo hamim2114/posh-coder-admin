@@ -4,22 +4,25 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { axiosReq } from '../../utils/axiosReq';
 import { Box, Typography, Card, CardContent, CircularProgress, Grid, Paper, Stack, Divider, IconButton, Chip } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
+import { useAuth } from '../../context/AuthProvider';
 
 const UserDetails = () => {
 
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const { token } = useAuth()
+
   // Fetch user details
   const { isLoading: userLoading, error: userError, data: userData } = useQuery({
     queryKey: ['userDetails', id],
-    queryFn: () => axiosReq.get(`/auth/user/${id}`).then(res => res.data)
+    queryFn: () => axiosReq.get(`/auth/user/${id}`, { headers: { Authorization: token } }).then(res => res.data)
   });
 
   // Fetch user orders, but only once userData is available
   const { isLoading: userOrderLoading, error: userOrderError, data: userOrder } = useQuery({
     queryKey: ['userOrders', id],
-    queryFn: () => axiosReq.get(`/order/userOrder/${userData?._id}`).then(res => res.data),
+    queryFn: () => axiosReq.get(`/order/userOrder/${userData?._id}`, { headers: { Authorization: token } }).then(res => res.data),
     enabled: !!userData?._id, // Only run this query if userData is available
   });
 

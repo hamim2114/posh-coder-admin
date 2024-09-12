@@ -10,14 +10,17 @@ import toast from 'react-hot-toast';
 import parse from 'html-react-parser';
 import EditBlog from './EditBlog';
 import { useLocation } from 'react-router-dom'
+import { useAuth } from '../../context/AuthProvider';
 
 const BlogCard = ({ item }) => {
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
+  const { token } = useAuth()
+
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/blog/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/blog/delete/${id}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['blog']);
       toast.success(res.data)
@@ -76,9 +79,9 @@ const BlogCard = ({ item }) => {
         p: 2
       }}>
         <Typography variant='h5' sx={{ fontSize: '22px' }}>{item.title}</Typography>
-        <Typography sx={{fontSize: '13px'}}>{parse(item.body.substring(0, 200))}</Typography>
+        <Typography sx={{ fontSize: '13px' }}>{parse(item.body.substring(0, 200))}</Typography>
         <Stack justifyContent='space-between' direction='row' gap={2}>
-        <Typography sx={{
+          <Typography sx={{
             fontSize: '12px',
             bgcolor: 'lightgray',
             p: '3px 10px',

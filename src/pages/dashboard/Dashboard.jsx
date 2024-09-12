@@ -6,6 +6,7 @@ import RecentCustomer from './RecentCustomer'
 import { Link } from 'react-router-dom'
 import { axiosReq } from '../../utils/axiosReq'
 import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '../../context/AuthProvider'
 
 const cardStyles = (bgColor, iconColor) => ({
   p: 3,
@@ -35,13 +36,17 @@ const typographyStyles = {
 };
 
 const Dashboard = () => {
+
+  const { token } = useAuth()
+  console.log(token)
   const { data: users } = useQuery({
+    enabled: !!token,
     queryKey: ['users'],
-    queryFn: () => axiosReq.get(`/auth/users`).then((res) => res.data)
+    queryFn: () => axiosReq.get(`/auth/users`, { headers: { Authorization: token } }).then((res) => res.data)
   });
   const { data: orders } = useQuery({
     queryKey: ['orders'],
-    queryFn: () => axiosReq.get(`/order/orders`).then((res) => res.data)
+    queryFn: () => axiosReq.get(`/order/orders`, { headers: { Authorization: token } }).then((res) => res.data)
   });
   const { data: allTeams } = useQuery({
     queryKey: ['team'],

@@ -9,6 +9,7 @@ import { uploadImage } from '../../../utils/upload';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 import LoadingBar from '../../../common/loadingBar/LoadingBar';
 import GraphicTemplateSingle from './GraphicTemplateSingle';
+import { useAuth } from '../../../context/AuthProvider';
 
 const GraphicTemplate = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -16,10 +17,11 @@ const GraphicTemplate = () => {
   const [file, setFile] = useState('');
   const [cloudinaryLoading, setCloudinaryLoading] = useState(false)
 
+  const { token } = useAuth()
 
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: (input) => axiosReq.post('/graphictemplate/create', input),
+    mutationFn: (input) => axiosReq.post('/graphictemplate/create', input, { headers: { Authorization: token } }),
     onSuccess: () => {
       queryClient.invalidateQueries(['graphictemplate']);
       toast.success('Upload Success!')

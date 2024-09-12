@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import CDialog from '../../../common/dialog/CDialog';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 import GraphicTemplateEdit from './GraphicTemplateEdit';
+import { useAuth } from '../../../context/AuthProvider';
 
 
 const GraphicTemplateSingle = ({ item }) => {
@@ -18,10 +19,11 @@ const GraphicTemplateSingle = ({ item }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
 
+  const { token } = useAuth()
 
   const queryClient = useQueryClient();
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/graphictemplate/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/graphictemplate/delete/${id}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['graphictemplate']);
       toast.success(res.data)

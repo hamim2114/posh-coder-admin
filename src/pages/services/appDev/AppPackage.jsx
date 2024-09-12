@@ -8,15 +8,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { axiosReq } from '../../../utils/axiosReq';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
+import { useAuth } from '../../../context/AuthProvider';
 
 const AppPackage = ({ data }) => {
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
 
+  const { token } = useAuth()
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/apppackage/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/apppackage/delete/${id}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['apppackage']);
       toast.success(res.data)

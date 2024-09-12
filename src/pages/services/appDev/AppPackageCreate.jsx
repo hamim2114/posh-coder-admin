@@ -7,6 +7,7 @@ import { axiosReq } from '../../../utils/axiosReq';
 import toast from 'react-hot-toast';
 import LoadingButton from '@mui/lab/LoadingButton';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
+import { useAuth } from '../../../context/AuthProvider';
 
 const AppPackageCreate = ({ handleDialogClose }) => {
     const [packageName, SetPackageName] = useState('')
@@ -14,10 +15,11 @@ const AppPackageCreate = ({ handleDialogClose }) => {
     const [inputValue, setInputValue] = useState('');
     const [detailsList, setDetailsList] = useState([]);
 
+    const { token } = useAuth()
 
     const queryClient = useQueryClient();
     const mutation = useMutation({
-        mutationFn: (input) => axiosReq.post('/apppackage/create', input),
+        mutationFn: (input) => axiosReq.post('/apppackage/create', input, { headers: { Authorization: token } }),
         onSuccess: (res) => {
             queryClient.invalidateQueries(['apppackage']);
             toast.success('App Package Created!')
@@ -30,6 +32,10 @@ const AppPackageCreate = ({ handleDialogClose }) => {
     })
 
     const handleSubmit = () => {
+        if (!packagePrice || !packageName) {
+            toast.error('All filed required')
+            return
+        }
         mutation.mutate({
             name: packageName,
             price: packagePrice,

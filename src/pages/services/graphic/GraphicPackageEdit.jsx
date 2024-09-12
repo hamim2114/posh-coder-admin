@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { axiosReq } from '../../../utils/axiosReq';
 import toast from 'react-hot-toast';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
+import { useAuth } from '../../../context/AuthProvider';
 
 const GraphicPackageEdit = ({ data, handleDialogClose }) => {
     const [inputValue, setInputValue] = useState('');
@@ -13,10 +14,11 @@ const GraphicPackageEdit = ({ data, handleDialogClose }) => {
     const [packageName, setPackageName] = useState('')
     const [packagePrice, setPackagePrice] = useState('')
 
+    const { token } = useAuth()
 
     const queryClient = useQueryClient();
     const mutation = useMutation({
-        mutationFn: (input) => axiosReq.put(`/graphicpackage/update/${data._id}`,input),
+        mutationFn: (input) => axiosReq.put(`/graphicpackage/update/${data._id}`, input, { headers: { Authorization: token } }),
         onSuccess: (res) => {
             queryClient.invalidateQueries(['apppackage']);
             toast.success('Update Success!')
@@ -66,7 +68,7 @@ const GraphicPackageEdit = ({ data, handleDialogClose }) => {
                 // bgcolor: '#fff'
             }}>
                 <TextField onChange={e => setPackageName(e.target.value)} placeholder='e.g. E-commerce Website' value={packageName} id="standard-basic" label="Package Name" variant="outlined" size='small' />
-                <TextField onChange={e=> setPackagePrice(e.target.value)} placeholder='e.g. Start at Tk 20,000' value={packagePrice} id="standard-basic" label="Price" variant="outlined" size='small' />
+                <TextField onChange={e => setPackagePrice(e.target.value)} placeholder='e.g. Start at Tk 20,000' value={packagePrice} id="standard-basic" label="Price" variant="outlined" size='small' />
                 <Box mt={3} mb={2}>
                     <Typography mb={1}>Package Details</Typography>
                     <Stack gap={1}>

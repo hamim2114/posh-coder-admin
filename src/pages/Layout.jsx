@@ -20,7 +20,7 @@ const drawerWidth = 260;
 
 function Layout(props) {
 
-  const { setUser } = useAuth()
+  const { setToken } = useAuth()
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
@@ -38,8 +38,8 @@ function Layout(props) {
   })
 
   const handleLogout = () => {
-    setUser(null)
-    mutation.mutate()
+    setToken(null)
+    // mutation.mutate()
   }
 
   const handleDrawerClose = () => {

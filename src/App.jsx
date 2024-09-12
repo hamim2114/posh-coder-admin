@@ -16,13 +16,13 @@ import UserDetails from './pages/user/UserDetails'
 import { useAuth } from './context/AuthProvider'
 
 function App() {
-  const { user } = useAuth()
+  const { token } = useAuth()
 
   return (
     <Routes>
-      <Route path='/' element={<Navigate to={user ? 'admin/dashboard' : 'admin/login'} />} />
-      <Route path='admin/login' element={user ? <Navigate to='admin/dashboard' /> : <Login />} />
-      <Route element={user ? <Layout /> : <Login />}>
+      <Route path='/' element={<Navigate to={token ? 'admin/dashboard' : 'admin/login'} />} />
+      <Route path='admin/login' element={token ? <Navigate to='admin/dashboard' /> : <Login />} />
+      <Route element={token ? <Layout /> : <Login />}>
         <Route path='admin/dashboard' element={<Dashboard />} />
         <Route path='admin/users' element={<User />} />
         <Route path='admin/users/details/:id' element={<UserDetails />} />

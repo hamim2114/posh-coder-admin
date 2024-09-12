@@ -13,6 +13,7 @@ import CDialog from '../../common/dialog/CDialog';
 import CButton from '../../common/CButton';
 import UpdateUser from './UpdateUser';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthProvider';
 
 const User = () => {
   const [userUpdateData, setUserUpdateData] = useState({})
@@ -23,7 +24,7 @@ const User = () => {
   const [searchText, setSearchText] = useState(null)
   const [statusFilter, setStatusFilter] = useState('')
 
-
+  const { token } = useAuth()
 
   const isMobile = useIsMobile()
 
@@ -42,12 +43,12 @@ const User = () => {
         queryString += queryString ? `&search=${searchText}` : `?search=${searchText}`;
       }
 
-      return axiosReq.get(`/auth/users${queryString}`).then((res) => res.data);
+      return axiosReq.get(`/auth/users${queryString}`, { headers: { Authorization: token } }).then((res) => res.data);
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/auth/users/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/auth/users/delete/${id}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['auth']);
       toast.success(res.data.message)

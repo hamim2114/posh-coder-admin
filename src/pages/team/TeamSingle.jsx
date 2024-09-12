@@ -8,16 +8,18 @@ import CDialog from '../../common/dialog/CDialog';
 import CLoadingBtn from '../../common/loadingButton/CLoadingBtn';
 import { deleteImage } from '../../utils/upload';
 import TeamEdit from './TeamEdit';
+import { useAuth } from '../../context/AuthProvider';
 
 const TeamSingle = ({ item }) => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [cloudinaryLoading, setCloudinaryLoading] = useState(false)
 
+  const { token } = useAuth()
 
   const queryClient = useQueryClient();
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/team/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/team/delete/${id}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['team']);
       toast.success(res.data)

@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { deleteImage, uploadImage } from '../../../utils/upload';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
 import LoadingBar from '../../../common/loadingBar/LoadingBar';
+import { useAuth } from '../../../context/AuthProvider';
 
 const AppTemplate = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -18,9 +19,11 @@ const AppTemplate = () => {
   const [cloudinaryLoading, setCloudinaryLoading] = useState(false)
 
 
+  const { token } = useAuth()
+
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: (input) => axiosReq.post('/apptemplate/create', input),
+    mutationFn: (input) => axiosReq.post('/apptemplate/create', input, { headers: { Authorization: token } }),
     onSuccess: () => {
       queryClient.invalidateQueries(['apptemplate']);
       toast.success('Upload Success!')
@@ -31,7 +34,7 @@ const AppTemplate = () => {
     onError: () => toast.error('Something went wrong!')
   })
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/apptemplate/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/apptemplate/delete/${id}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['apptemplate']);
       toast.success(res.data)

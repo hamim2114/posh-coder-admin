@@ -15,6 +15,7 @@ import UpdateOrder from './UpdateOrder';
 import toast from 'react-hot-toast';
 import SlideDrawer from '../../common/drawer/SlideDrawer';
 import OrderDetails from './OrderDetails';
+import { useAuth } from '../../context/AuthProvider';
 
 const Order = () => {
   const [orderUpdateData, setOrderUpdateData] = useState({})
@@ -39,7 +40,7 @@ const Order = () => {
     setOpenSlideDrawer(!openSlideDrawer);
   };
 
-
+  const { token } = useAuth()
 
   const isMobile = useIsMobile()
 
@@ -55,12 +56,12 @@ const Order = () => {
       if (searchText) {
         queryString += queryString ? `&search=${searchText}` : `?search=${searchText}`;
       }
-      return axiosReq.get(`/order/orders${queryString}`).then((res) => res.data);
+      return axiosReq.get(`/order/orders${queryString}`, { headers: { Authorization: token } }).then((res) => res.data);
     },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/order/delete/${deleteOrderId}`),
+    mutationFn: (id) => axiosReq.delete(`/order/delete/${deleteOrderId}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['order']);
       toast.success(res.data.message)

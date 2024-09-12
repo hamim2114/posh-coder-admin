@@ -6,15 +6,18 @@ import toast from 'react-hot-toast';
 import { Box, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import CButton from '../../common/CButton';
 import { Close } from '@mui/icons-material';
+import { useAuth } from '../../context/AuthProvider';
 
 const UpdateOrder = ({ data, closeDialog }) => {
   const [note, setNote] = useState('')
   const [status, setStatus] = useState('')
 
+  const { token } = useAuth()
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (input) => axiosReq.put(`/order/edit/${data._id}`, input),
+    mutationFn: (input) => axiosReq.put(`/order/edit/${data._id}`, input, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['order']);
       closeDialog(true);

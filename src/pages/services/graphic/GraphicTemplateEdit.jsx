@@ -9,6 +9,7 @@ import { Close, FileUpload } from '@mui/icons-material';
 import { axiosReq } from '../../../utils/axiosReq';
 import { deleteImage, uploadImage } from '../../../utils/upload';
 import CLoadingBtn from '../../../common/loadingButton/CLoadingBtn';
+import { useAuth } from '../../../context/AuthProvider';
 
 
 const GraphicTemplateEdit = ({ handleEditDialogClose, item }) => {
@@ -20,9 +21,11 @@ const GraphicTemplateEdit = ({ handleEditDialogClose, item }) => {
     secure_url: ''
   })
 
+  const { token } = useAuth()
+
   const queryClient = useQueryClient();
   const editMutation = useMutation({
-    mutationFn: (i) => axiosReq.put(`/graphictemplate/edit/${item._id}`, i),
+    mutationFn: (i) => axiosReq.put(`/graphictemplate/edit/${item._id}`, i, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['graphictemplate']);
       toast.success('Updated!')

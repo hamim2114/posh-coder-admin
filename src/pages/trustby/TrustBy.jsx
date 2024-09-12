@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { deleteImage, uploadImage } from '../../utils/upload';
 import CLoadingBtn from '../../common/loadingButton/CLoadingBtn';
 import LoadingBar from '../../common/loadingBar/LoadingBar';
+import { useAuth } from '../../context/AuthProvider';
 
 const TrustBy = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
@@ -16,10 +17,11 @@ const TrustBy = () => {
   const [deleteItemData, setDeleteItemData] = useState({})
   const [cloudinaryLoading, setCloudinaryLoading] = useState(false)
 
+  const { token } = useAuth()
 
   const queryClient = useQueryClient();
   const createMutation = useMutation({
-    mutationFn: (input) => axiosReq.post('/trustby/create', input),
+    mutationFn: (input) => axiosReq.post('/trustby/create', input, { headers: { Authorization: token } }),
     onSuccess: () => {
       queryClient.invalidateQueries(['trustby']);
       toast.success('Upload Success!')
@@ -29,7 +31,7 @@ const TrustBy = () => {
     onError: () => toast.error('Something went wrong!')
   })
   const deleteMutation = useMutation({
-    mutationFn: (id) => axiosReq.delete(`/trustby/delete/${id}`),
+    mutationFn: (id) => axiosReq.delete(`/trustby/delete/${id}`, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['trustby']);
       toast.success(res.data)

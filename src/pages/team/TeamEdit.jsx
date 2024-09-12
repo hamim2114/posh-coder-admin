@@ -9,6 +9,7 @@ import CLoadingBtn from '../../common/loadingButton/CLoadingBtn';
 import { useState } from 'react';
 import { deleteImage, uploadImage } from '../../utils/upload';
 import { Close, FileUpload } from '@mui/icons-material';
+import { useAuth } from '../../context/AuthProvider';
 
 
 const TeamEdit = ({ handleEditDialogClose, item }) => {
@@ -20,9 +21,11 @@ const TeamEdit = ({ handleEditDialogClose, item }) => {
     secure_url: ''
   })
 
+  const { token } = useAuth()
+
   const queryClient = useQueryClient();
   const editMutation = useMutation({
-    mutationFn: (i) => axiosReq.put(`/team/edit/${item._id}`, i),
+    mutationFn: (i) => axiosReq.put(`/team/edit/${item._id}`, i, { headers: { Authorization: token } }),
     onSuccess: (res) => {
       queryClient.invalidateQueries(['team']);
       toast.success('Updated!')
