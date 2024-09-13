@@ -60,6 +60,7 @@ function Layout(props) {
   const drawer = (
     <Box>
       <Typography sx={{ textAlign: 'center', fontSize: '25px', fontWeight: 600, mt: 6 }}>PoshCoder</Typography>
+      <Typography sx={{ textAlign: 'center', fontSize: '14px' }}>poshcoderbd@gmail.com</Typography>
       <CDrawer handleDrawerClose={handleDrawerClose} />
     </Box>
   );
@@ -87,10 +88,10 @@ function Layout(props) {
           </IconButton>
           <Box />
           <ListItem sx={{ width: 'fit-content', }} >
-            <IconButton onClick={handleLogout}>
-              <Logout sx={{ color: '#fff' }} />
+            <IconButton sx={{ color: '#fff' }} onClick={handleLogout}>
+              <Logout />
+              <Typography sx={{ ml: 1 }}>Logout</Typography>
             </IconButton>
-            <Typography>Logout</Typography>
           </ListItem>
         </Toolbar>
       </AppBar>
