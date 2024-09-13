@@ -38,7 +38,7 @@ const typographyStyles = {
 const Dashboard = () => {
 
   const { token } = useAuth()
-  console.log(token)
+
   const { data: users } = useQuery({
     enabled: !!token,
     queryKey: ['users'],

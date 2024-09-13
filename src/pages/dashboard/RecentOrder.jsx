@@ -65,10 +65,10 @@ const RecentOrder = () => {
                 <Typography sx={{
                   fontSize: '14px',
                   fontWeight: 600,
-                }}> {row.name}
+                }}> {row.user?.username}
                 </Typography>
               </Link>
-              <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <EmailOutlined sx={{ fontSize: '18px', color: 'gray' }} /> {row.email}</Typography>
+              <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <EmailOutlined sx={{ fontSize: '18px', color: 'gray' }} /> {row.user?.email}</Typography>
               <Typography sx={{ display: 'inline-flex', fontSize: '14px', gap: .5 }}> <Call sx={{ fontSize: '18px', color: 'gray' }} /> {row.phone}</Typography>
             </Stack>
           </Stack>

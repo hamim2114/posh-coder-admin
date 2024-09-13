@@ -5,6 +5,8 @@ import { axiosReq } from '../../utils/axiosReq';
 import { Box, Typography, Card, CardContent, CircularProgress, Grid, Paper, Stack, Divider, IconButton, Chip } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthProvider';
+import Loader from '../../common/Loader';
+import ErrorMsg from '../../common/ErrorMsg';
 
 const UserDetails = () => {
 
@@ -18,16 +20,6 @@ const UserDetails = () => {
     queryKey: ['userDetails', id],
     queryFn: () => axiosReq.get(`/auth/user/${id}`, { headers: { Authorization: token } }).then(res => res.data)
   });
-
-  // Fetch user orders, but only once userData is available
-  const { isLoading: userOrderLoading, error: userOrderError, data: userOrder } = useQuery({
-    queryKey: ['userOrders', id],
-    queryFn: () => axiosReq.get(`/order/userOrder/${userData?._id}`, { headers: { Authorization: token } }).then(res => res.data),
-    enabled: !!userData?._id, // Only run this query if userData is available
-  });
-
-  if (userLoading || userOrderLoading) return <CircularProgress />;
-  if (userError || userOrderError) return <Typography color="error">An error occurred.</Typography>;
 
   return (
     <Box maxWidth='xl'>
@@ -58,44 +50,46 @@ const UserDetails = () => {
         </Typography>
         <Divider sx={{ mb: 3 }} />
         <Grid container spacing={2}>
-          {userOrder?.orders.length === 0 ?
+          {userData?.userOrders?.length === 0 ?
             <Typography variant='body2' sx={{ p: 4, color: 'gray' }}>No Order Found.</Typography> :
-            userOrder?.orders?.map((order) => (
-              <Grid item xs={12} md={6} key={order._id}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6">{order.orderName}</Typography>
-                    <Stack direction='row' my={1} gap={1}>
-                      <Typography>Status: </Typography>
-                      <Box sx={{
-                        display: 'inline-flex',
-                        padding: '2px 12px',
-                        bgcolor: order.status === 'cancelled'
-                          ? 'red'
-                          : order.status === 'confirmed'
-                            ? '#386FA8'
-                            : order.status === 'delivered'
-                              ? 'green'
-                              : order.status === 'processing'
-                                ? '#419BD2'
-                                : 'purple',
-                        color: '#fff',
-                        borderRadius: '4px',
-                      }}>
-                        <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>{order.status}</Typography>
-                      </Box>
-                    </Stack>
-                    <Typography variant="body2"><strong>Name:</strong> {order.name}</Typography>
-                    <Typography variant="body2"><strong>Phone:</strong> {order.phone}</Typography>
-                    <Typography variant="body2"><strong>Description:</strong> {order.desc}</Typography>
-                    {order.note && (
-                      <Typography variant="body2" color="textSecondary"><strong>AdminNote:</strong> {order.note}</Typography>
-                    )}
-                    <Typography variant="caption" color="textSecondary"><strong>Ordered On:</strong> {new Date(order.createdAt).toLocaleDateString()}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+            userLoading ? <Loader /> :
+              userError ? <ErrorMsg /> :
+                userData?.userOrders?.map((order) => (
+                  <Grid item xs={12} md={6} key={order._id}>
+                    <Card>
+                      <CardContent>
+                        <Typography variant="h6">{order.orderName}</Typography>
+                        <Stack direction='row' my={1} gap={1}>
+                          <Typography>Status: </Typography>
+                          <Box sx={{
+                            display: 'inline-flex',
+                            padding: '2px 12px',
+                            bgcolor: order.status === 'cancelled'
+                              ? 'red'
+                              : order.status === 'confirmed'
+                                ? '#386FA8'
+                                : order.status === 'delivered'
+                                  ? 'green'
+                                  : order.status === 'processing'
+                                    ? '#419BD2'
+                                    : 'purple',
+                            color: '#fff',
+                            borderRadius: '4px',
+                          }}>
+                            <Typography sx={{ fontWeight: 600, textAlign: 'center' }} variant='body2'>{order.status}</Typography>
+                          </Box>
+                        </Stack>
+                        <Typography variant="body2"><strong>Name:</strong> {order.name}</Typography>
+                        <Typography variant="body2"><strong>Phone:</strong> {order.phone}</Typography>
+                        <Typography variant="body2"><strong>Description:</strong> {order.desc}</Typography>
+                        {order.note && (
+                          <Typography variant="body2" color="textSecondary"><strong>AdminNote:</strong> {order.note}</Typography>
+                        )}
+                        <Typography variant="caption" color="textSecondary"><strong>Ordered On:</strong> {new Date(order.createdAt).toLocaleDateString()}</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
         </Grid>
       </Paper>
     </Box>
