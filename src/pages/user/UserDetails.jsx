@@ -33,7 +33,7 @@ const UserDetails = () => {
             User Details
           </Typography>
           {
-            !userData &&
+            (!userData && !userLoading) &&
             <Chip color='warning' variant='outlined' label='User_Deleted' />
           }
           <Typography variant="body1"><strong>Username:</strong> {userData?.username}</Typography>
